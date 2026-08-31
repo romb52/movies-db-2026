@@ -1,7 +1,7 @@
 import type { Action, Reducer } from "redux";
 
 
-interface Movie {
+export interface Movie {
     id: number;
     title: string;
     popularity: number;
@@ -14,11 +14,31 @@ interface MovieState {
 
 const initialState: MovieState = {
     top: [
-        { id: 1, title: "Interstellar", popularity: 99, overview: "A science fiction movie...." },
-        { id: 2, title: "fgf", popularity: 90, overview: "klgjk...." },
-        { id: 3, title: "fjnsfdgsdfgdfgddfgnj", popularity: 9, overview: "gjilfghzsdf...." },
-        { id: 4, title: "kfjhkdtghd", popularity: 55, overview: "tsjfgghasdf...." }
-    ]
+  {
+    id: 1,
+    title: "Interstellar",
+    popularity: 99,
+    overview: "A team of explorers travels through a wormhole in space in search of a new home for humanity."
+  },
+  {
+    id: 2,
+    title: "Inception",
+    popularity: 95,
+    overview: "A skilled thief who steals secrets through dreams is given a chance to erase his past by planting an idea in someone's mind."
+  },
+  {
+    id: 3,
+    title: "The Dark Knight",
+    popularity: 94,
+    overview: "Batman faces a criminal mastermind who spreads chaos across Gotham City and pushes its heroes to their limits."
+  },
+  {
+    id: 4,
+    title: "The Matrix",
+    popularity: 91,
+    overview: "A computer hacker discovers that the world he knows is a simulated reality and joins a rebellion against its creators."
+  }
+]
 }
 
 const moviesReducer: Reducer<MovieState, Action> = (state = initialState, action) => {
