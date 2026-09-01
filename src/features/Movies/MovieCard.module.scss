@@ -1,0 +1,48 @@
+@use "../../styles/shared";
+
+
+.card {
+    width: 200px;
+    height: 400px;
+    margin: 1rem;
+   // padding: 1rem;
+    display: flex;
+    flex: 0 1 0;
+    flex-direction: column;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px 1px rgba(241, 236, 236, 0.616);
+
+
+    a {
+        color: shared.$primary-color;
+    }
+    .thumbnail{
+       // width: 100%;
+        height: 200px;
+       // object-fit: cover;
+        border-top-right-radius: 5px;
+        border-top-left-radius: 5px;
+    }
+    .content{
+        padding: 1rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;     
+
+        .overview {
+            font-size: small;
+            color: shared.$dimmed-color;             
+        }
+        .pop{
+            margin-top: 0.5rem;
+            font-weight: bold;
+        }
+    }
+
+
+    @media (max-width: shared.$max-mobile-width) {
+        margin: 0.5rem;        
+    }
+}

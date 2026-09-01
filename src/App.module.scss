@@ -1,0 +1,37 @@
+@use "./styles/shared";
+
+
+.app {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  background-color: #282c34;
+
+  .header {
+    min-height: 18vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: shared.$primary-color;
+
+    .link {
+      color: shared.$link-color;
+      
+    }
+
+    ul {
+      list-style: none;
+      li{
+        display: inline-block;
+        margin: 10px;
+      }
+    }
+  }
+
+  .main {
+    min-height: 98vh;
+    color: shared.$primary-color;
+  }
+}
