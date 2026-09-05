@@ -1,14 +1,16 @@
+import configuration from "../configuration";
+
 async function get(relativeURL: string) {
 
     const options = {
         method: 'GET',
         headers: {
             accept: 'application/json',
-            Authorization: `Bearer ${process.env.REACT_APP_API_TOKEN}`
+            Authorization: `Bearer ${configuration.apiToken}`
         }
     };
 
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/3${relativeURL}`, options)
+    const response = await fetch(`${configuration.apiUrl}/3${relativeURL}`, options)
     const json = await response.json()
 
     return json;
