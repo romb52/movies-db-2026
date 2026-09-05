@@ -3,11 +3,27 @@ import { connect } from "react-redux"
 import { RootState } from "../../store";
 import { MovieCard } from "./MovieCard";
 import styles from "./Movies.module.scss";
+import { useEffect, useState } from "react";
+import { client } from "../../api/tmdb";
 
 interface MoviesProps {
     movies: Movie[]
 }
 
+
+export function MoviesFetch() {
+    const [movies, setMovies] = useState([]);
+
+    useEffect(() => {
+        async function loadData() {
+            const response = await client.getNowPlaying();
+            setMovies(response.results);
+        }
+
+        loadData();
+    }, [])
+    return <Movies movies={movies} />
+}
 
 function Movies({ movies }: MoviesProps) {
     return <section>
