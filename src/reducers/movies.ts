@@ -1,49 +1,75 @@
 import type { Action, Reducer } from "redux";
+import { ActionWithPayload, createReducer } from "../redux/utils";
+import { AppThunk } from "../store";
+import { client } from "../api/tmdb";
 
 
 export interface Movie {
-    id: number;
-    title: string;
-    popularity: number;
-    overview: string;
-    image?: string;
+  id: number;
+  title: string;
+  popularity: number;
+  overview: string;
+  image?: string;
 }
 
 interface MovieState {
-    top: Movie[]
+  top: Movie[];
+  loading: boolean
 }
 
 const initialState: MovieState = {
-    top: [
-  {
-    id: 1,
-    title: "Interstellar",
-    popularity: 99,
-    overview: "A team of explorers travels through a wormhole in space in search of a new home for humanity."
-  },
-  {
-    id: 2,
-    title: "Inception",
-    popularity: 95,
-    overview: "A skilled thief who steals secrets through dreams is given a chance to erase his past by planting an idea in someone's mind."
-  },
-  {
-    id: 3,
-    title: "The Dark Knight",
-    popularity: 94,
-    overview: "Batman faces a criminal mastermind who spreads chaos across Gotham City and pushes its heroes to their limits."
-  },
-  {
-    id: 4,
-    title: "The Matrix",
-    popularity: 91,
-    overview: "A computer hacker discovers that the world he knows is a simulated reality and joins a rebellion against its creators."
+  top: [],
+  loading: false
+};
+
+const moviesLoaded = (movies: Movie[]) => ({
+  type: "movies/loaded",
+  payload: movies
+});
+
+const moviesLoading = () => ({
+  type: "movies/loading"
+});
+
+export function fetchMovies(): AppThunk<Promise<void>> {
+  return async (dispatch, getState) => {
+    dispatch(moviesLoading());
+
+
+    const config = await client.getConfiguration();
+    const imageUrl = config.images.base_url;
+    const results = await client.getNowPlaying();
+
+    const mappedResults: Movie[] = results.map((m) => ({
+      id: m.id,
+      title: m.title,
+      overview: m.overview,
+      popularity: m.popularity,
+      image: m.backdrop_path ? `${imageUrl}w780${m.backdrop_path}` : undefined
+    }))
+
+    dispatch(moviesLoaded(mappedResults));
   }
-]
 }
 
-const moviesReducer: Reducer<MovieState, Action> = (state = initialState, action) => {
-    return state;
-}
+
+const moviesReducer = createReducer<MovieState>(
+  initialState,
+  {
+    "movies/loaded": (state, action: ActionWithPayload<Movie[]>) => {
+      return {
+        ...state,
+        top: action.payload,
+        loading: false
+      }
+    },
+    "movies/loading": (state, action) => {
+      return {
+        ...state,
+        loading: true
+      }
+    }
+  }
+)
 
 export default moviesReducer;
