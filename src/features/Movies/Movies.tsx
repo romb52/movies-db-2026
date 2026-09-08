@@ -4,7 +4,7 @@ import { RootState } from "../../store";
 import { MovieCard } from "./MovieCard";
 import styles from "./Movies.module.scss";
 import { useEffect, useState } from "react";
-import { client } from "../../api/tmdb";
+import { client, MovieDetails } from "../../api/tmdb";
 
 interface MoviesProps {
     movies: Movie[]
@@ -12,12 +12,23 @@ interface MoviesProps {
 
 
 export function MoviesFetch() {
-    const [movies, setMovies] = useState([]);
+    const [movies, setMovies] = useState<MovieDetails[]>([]);
 
     useEffect(() => {
         async function loadData() {
-            const response = await client.getNowPlaying();
-            setMovies(response.results);
+            const config = await client.getConfiguration();
+            const imageUrl = config.images.base_url;
+            const results = await client.getNowPlaying();
+
+            const mappedResults: Movie[] = results.map ((m)=>({
+                id: m.id,
+                title: m.title,
+                overview: m.overview,
+                popularity: m.popularity,
+                image: m.backdrop_path ? `${imageUrl}w780${m.backdrop_path}` : undefined
+            }))
+
+            setMovies(mappedResults);
         }
 
         loadData();
@@ -30,7 +41,7 @@ function Movies({ movies }: MoviesProps) {
         <div className={styles.list}>
             {movies.map((m) => (
                 <li key={m.id}>
-                    <MovieCard key={m.id} id={m.id} title={m.title} overview={m.overview} popularity={m.popularity} />
+                    <MovieCard key={m.id} id={m.id} title={m.title} overview={m.overview} popularity={m.popularity} image ={m.image} />
                 </li>
             ))}
         </div>

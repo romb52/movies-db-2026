@@ -5,14 +5,15 @@ interface MovieCardProps {
     id: number;
     title: string;
     overview: string;
-    popularity: number
+    popularity: number;
+    image?: string;
 }
 
 
-export function MovieCard({ id, title, overview, popularity }: MovieCardProps) {
+export function MovieCard({ id, title, overview, popularity, image= "/thumbnail.jpg" }: MovieCardProps) {
     return (
         <div className={styles.card}>
-            <img className={styles.thumbnail} src="/thumbnail.jpg" alt="thumbnail" />
+            <img className={styles.thumbnail} src={image} alt="thumbnail" />
             <div className={styles.content}>
                 <Link to={`/movies/${id}`}>{title}</Link>
                 <div className={styles.overview}>{overview}</div>

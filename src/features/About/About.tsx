@@ -1,5 +1,5 @@
 export function About (){
     return <div>
-        coming soon....
+        coming soon......
     </div>
 }
