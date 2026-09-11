@@ -21,7 +21,8 @@ export interface MovieDetails {
     title: string;
     popularity: number;
     overview: string;
-    backdrop_path?: string
+    backdrop_path?: string;
+    poster_path?: string
 }
 
 interface PageResponse<TResults> {
@@ -44,5 +45,9 @@ export const client = {
         const response = await get<PageResponse<MovieDetails>>('/movie/now_playing?page=1');
         return response.results;
     },
+    async searchMovies(query: string): Promise<MovieDetails[]> {
+        const response = await get<PageResponse<MovieDetails>>(`/search/movie?query=${encodeURIComponent(query)}&page=1`);
+        return response.results;
+    }
 
 }

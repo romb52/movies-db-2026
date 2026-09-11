@@ -35,7 +35,6 @@ export function fetchMovies(): AppThunk<Promise<void>> {
   return async (dispatch, getState) => {
     dispatch(moviesLoading());
 
-
     const config = await client.getConfiguration();
     const imageUrl = config.images.base_url;
     const results = await client.getNowPlaying();
@@ -51,6 +50,27 @@ export function fetchMovies(): AppThunk<Promise<void>> {
     dispatch(moviesLoaded(mappedResults));
   }
 }
+
+export function searchMovies(query: string): AppThunk<Promise<void>> {
+  return async (dispatch, getState) => {
+    dispatch(moviesLoading());
+
+    const config = await client.getConfiguration();
+    const imageUrl = config.images.base_url;
+    const results = await client.searchMovies(query);
+
+    const mappedResults: Movie[] = results.map((m) => ({
+      id: m.id,
+      title: m.title,
+      overview: m.overview,
+      popularity: m.popularity,
+      image: m.backdrop_path ? `${imageUrl}w780${m.backdrop_path}` : undefined
+    }))
+
+    dispatch(moviesLoaded(mappedResults));
+  }
+}
+
 
 
 const moviesReducer = createReducer<MovieState>(
