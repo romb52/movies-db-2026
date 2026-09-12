@@ -1,16 +1,19 @@
 import { Link as RouterLink } from "react-router-dom";
-import { Button, Card, CardActions, CardContent, CardMedia, Typography } from "@mui/material";
+import { Button, Card, CardActions, CardContent, CardMedia, IconButton, Tooltip, Typography } from "@mui/material";
+import FavoriteIcon from '@mui/icons-material/Favorite';
+
 
 interface MovieCardProps {
     id: number;
     title: string;
     overview: string;
     popularity: number;
+    enableUserActions?: boolean;
     image?: string;
 }
 
 
-export function MovieCard({ id, title, overview, popularity, image = "/thumbnail.jpg" }: MovieCardProps) {
+export function MovieCard({ id, title, overview, popularity, enableUserActions, image = "/thumbnail.jpg" }: MovieCardProps) {
     return (
         <Card sx={{
             height: "100%",
@@ -40,6 +43,11 @@ export function MovieCard({ id, title, overview, popularity, image = "/thumbnail
                 <Button component={RouterLink} to={`/movies/${id}`}>
                     Details
                 </Button>
+                {enableUserActions && (<Tooltip title="Add to favorites">
+                    <IconButton>
+                        <FavoriteIcon />
+                    </IconButton>
+                </Tooltip>)}
             </CardActions>
         </Card>
     )

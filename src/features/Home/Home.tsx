@@ -1,8 +1,15 @@
 import { Link as RouterLink } from "react-router-dom";
 import { Button, Container, Stack, Typography } from "@mui/material";
+import { anonymousUser, AuthContext } from "../../AuthContext";
+import { useContext } from "react";
 
 
 export function Home() {
+   const auth = useContext(AuthContext); 
+   const loggedIn = auth.user !== anonymousUser;
+
+const greeting = loggedIn ? `${auth.user.name}, explore movies today with us!`: "Explore movies today with us!"
+
     return (
         <Container sx={{ py: 8 }}>
             <Typography
@@ -20,7 +27,7 @@ export function Home() {
                 color="text.secondary"
                 component="p"
             >
-                Explore movies today with us!
+                {greeting}
             </Typography>
             <Stack
                 sx={{ pt: 4, justifyContent: "center" }}
