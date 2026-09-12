@@ -1,19 +1,31 @@
 import configuration from "../configuration";
+import axios from "axios";
 
 async function get<TBody>(relativeURL: string): Promise<TBody> {
 
+    // const options = {
+    //     method: 'GET',
+    //     headers: {
+    //         accept: 'application/json',
+    //         Authorization: `Bearer ${configuration.apiToken}`
+    //     }
+    // };
+
+    // const response = await fetch(`${configuration.apiUrl}/3${relativeURL}`, options)
+    // const json: TBody = await response.json()
+
+    // return json;
+
     const options = {
-        method: 'GET',
         headers: {
             accept: 'application/json',
             Authorization: `Bearer ${configuration.apiToken}`
         }
-    };
+    }
 
-    const response = await fetch(`${configuration.apiUrl}/3${relativeURL}`, options)
-    const json: TBody = await response.json()
+    const response = await axios.get<TBody>(`${configuration.apiUrl}/3${relativeURL}`, options);
 
-    return json;
+    return response.data;
 }
 
 export interface MovieDetails {
