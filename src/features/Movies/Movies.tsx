@@ -16,8 +16,8 @@ interface MoviesProps {
 function Movies({ movies, loading }: MoviesProps) {
     const dispatch = useAppDispatch();
 
-       const auth = useContext(AuthContext); 
-       const loggedIn = auth.user !== anonymousUser;
+    const auth = useContext(AuthContext);
+    const loggedIn = auth.user !== anonymousUser;
 
     useEffect(() => {
         dispatch(fetchMovies());

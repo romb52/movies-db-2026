@@ -10,4 +10,4 @@ export interface AuthInfo {
     }
 }
 
-export const AuthContext = createContext<AuthInfo>({user: anonymousUser})
+export const AuthContext = createContext<AuthInfo>({user: anonymousUser});

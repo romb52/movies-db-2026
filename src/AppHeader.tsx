@@ -5,7 +5,12 @@ import { useContext } from "react";
 import { anonymousUser, AuthContext } from "./AuthContext";
 
 
-export function AppHeader() {
+interface AppHeaderProps{
+    onLogin(): void;
+    onLogout(): void;
+}
+
+export function AppHeader({onLogin, onLogout} : AppHeaderProps) {
     return (
         <AppBar >
             <Toolbar>
@@ -18,23 +23,28 @@ export function AppHeader() {
                         <HeaderLink to="/about">About</HeaderLink>
                     </nav>
                 </Box>
-                <AuthSection />
+                <AuthSection onLogin={onLogin}  onLogout={onLogout}/>
             </Toolbar>
         </AppBar >
     );
 }
 
-function AuthSection() {
+interface AuthSectionProps{
+    onLogin(): void;
+    onLogout(): void;
+}
+
+function AuthSection({onLogin, onLogout} : AuthSectionProps) {
    const auth = useContext(AuthContext); 
    const loggedIn = auth.user !== anonymousUser;
 
     if (loggedIn){
        return <>
         <Typography>Hello, {auth.user.name} !</Typography>
-        <Button variant="contained" sx={{ml: 2}}>Log out</Button>
+        <Button variant="contained" sx={{ml: 2}} onClick={onLogout}>Log out</Button>
         </>
     }
-    return <Button variant="contained">Log in</Button>
+    return <Button variant="contained" onClick={onLogin}>Log in</Button>
 }
 
 function HeaderLink({ children, to }: { children: React.ReactNode, to: string }) {

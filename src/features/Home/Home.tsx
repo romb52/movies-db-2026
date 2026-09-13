@@ -5,10 +5,9 @@ import { useContext } from "react";
 
 
 export function Home() {
-   const auth = useContext(AuthContext); 
-   const loggedIn = auth.user !== anonymousUser;
-
-const greeting = loggedIn ? `${auth.user.name}, explore movies today with us!`: "Explore movies today with us!"
+    const auth = useContext(AuthContext);
+    const loggedIn = auth.user !== anonymousUser;
+    const greeting = loggedIn ? `${auth.user.name}, explore movies today with us!` : "Explore movies today with us!"
 
     return (
         <Container sx={{ py: 8 }}>
@@ -27,7 +26,7 @@ const greeting = loggedIn ? `${auth.user.name}, explore movies today with us!`: 
                 color="text.secondary"
                 component="p"
             >
-                {greeting}
+                 {greeting}  
             </Typography>
             <Stack
                 sx={{ pt: 4, justifyContent: "center" }}
