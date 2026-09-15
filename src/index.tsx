@@ -15,12 +15,13 @@ import { Provider } from 'react-redux';
 import store from './store';
 import { MovieDetails } from './features/Movies/MovieDetails';
 import { Home } from './features/Home/Home';
-import { ErrorBoundary } from './ErrorBoundary';
+import { ErrorBoundary } from 'react-error-boundary';
+//import { ErrorBoundary } from './ErrorBoundary';
 
 
 function AppEntrypoint (){
   return <Provider store={store}>
-    <ErrorBoundary><App /></ErrorBoundary>
+    <ErrorBoundary fallback= {<h2>Oops! Something weny wrong...</h2>}><App /></ErrorBoundary>
     </Provider>
 }
 
