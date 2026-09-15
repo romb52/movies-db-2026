@@ -15,10 +15,13 @@ import { Provider } from 'react-redux';
 import store from './store';
 import { MovieDetails } from './features/Movies/MovieDetails';
 import { Home } from './features/Home/Home';
+import { ErrorBoundary } from './ErrorBoundary';
 
 
 function AppEntrypoint (){
-  return <Provider store={store}><App /></Provider>
+  return <Provider store={store}>
+    <ErrorBoundary><App /></ErrorBoundary>
+    </Provider>
 }
 
 const router = createBrowserRouter([

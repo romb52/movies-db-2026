@@ -9,6 +9,9 @@ export function Home() {
     const loggedIn = auth.user !== anonymousUser;
     const greeting = loggedIn ? `${auth.user.name}, explore movies today with us!` : "Explore movies today with us!"
 
+   
+   //throw new Error ("Fuckupp!");
+   
     return (
         <Container sx={{ py: 8 }}>
             <Typography
