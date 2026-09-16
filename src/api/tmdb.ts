@@ -1,3 +1,4 @@
+//import { Movie } from './../reducers/movies';
 import configuration from "../configuration";
 import axios from "axios";
 
@@ -40,6 +41,14 @@ export interface MovieDetails {
 interface PageResponse<TResults> {
     page: number;
     results: TResults[];
+    total_pages: number;
+}
+
+
+interface PageDetails<TResults> {
+    page: number;
+    results: TResults[];
+    totalPages: number;
 }
 
 interface Configuration {
@@ -53,9 +62,13 @@ export const client = {
         return get<Configuration>("/configuration");
     },
 
-    async getNowPlaying(): Promise<MovieDetails[]> {
-        const response = await get<PageResponse<MovieDetails>>('/movie/now_playing?page=1');
-        return response.results;
+    async getNowPlaying(page: number = 1): Promise<PageDetails<MovieDetails>> {
+        const response = await get<PageResponse<MovieDetails>>(`/movie/now_playing?page=${page}`);
+        return {
+            results: response.results,
+            page: response.page,
+            totalPages: response.total_pages
+        }
     },
     async searchMovies(query: string): Promise<MovieDetails[]> {
         const response = await get<PageResponse<MovieDetails>>(`/search/movie?query=${encodeURIComponent(query)}&page=1`);

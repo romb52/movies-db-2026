@@ -1,4 +1,4 @@
-import { fetchMovies, Movie, searchMovies } from "../../reducers/movies";
+import { fetchFirstPage, fetchNextPage, Movie, searchMovies } from "../../reducers/movies";
 import { connect } from "react-redux"
 import { RootState } from "../../store";
 import { MovieCard } from "./MovieCard";
@@ -6,24 +6,31 @@ import { useContext, useEffect, useState } from "react";
 import { useAppDispatch } from "../../hooks";
 import { Box, Button, Container, Grid, LinearProgress, TextField, Typography } from "@mui/material";
 import { AuthContext, anonymousUser } from "../../AuthContext";
+import { useIntersectionObserver } from "../../hooks/useIntersectionObserver";
 
 
 interface MoviesProps {
     movies: Movie[];
-    loading: boolean
+    loading: boolean;
+    hasMorePages: boolean;
 }
 
-function Movies({ movies, loading }: MoviesProps) {
+function Movies({ movies, loading, hasMorePages }: MoviesProps) {
+    const [query, setQuery] = useState("");
     const dispatch = useAppDispatch();
 
     const auth = useContext(AuthContext);
     const loggedIn = auth.user !== anonymousUser;
 
-    useEffect(() => {
-        dispatch(fetchMovies());
-    }, [dispatch]);
+    const [targetRef, entry] = useIntersectionObserver();
 
-    const [query, setQuery] = useState("");
+    useEffect(() => {
+        if (entry?.isIntersecting && hasMorePages && !query ) {          
+            dispatch(fetchNextPage());
+        }//
+    }, [dispatch, entry?.isIntersecting, hasMorePages, query]);
+
+    
 
     return (
         <Container sx={{ py: 9 }} >
@@ -54,7 +61,7 @@ function Movies({ movies, loading }: MoviesProps) {
                     variant="contained"
                     onClick={() => {
                         setQuery("");
-                        dispatch(fetchMovies());
+                        dispatch(fetchFirstPage());
                     }
                     }
                 >
@@ -64,23 +71,17 @@ function Movies({ movies, loading }: MoviesProps) {
             <Typography variant="h4" align="center">
                 {query ? `Search results: ${query}` : "Now playing"}
             </Typography>
-
-            {
-                loading ? (<LinearProgress color="secondary" />) :
-                    (
-                        <Grid container spacing={3}>
-                            {movies.map((m) => (
-                                <Grid key={m.id}
-                                    size={{ xs: 12, sm: 6, md: 4 }}
-                                    sx={{ display: "flex", justifyContent: "center" }}
-                                >
-                                    <MovieCard id={m.id} title={m.title} overview={m.overview} popularity={m.popularity} enableUserActions={loggedIn} image={m.image} />
-                                </Grid>
-                            ))}
-                        </Grid>
-                    )
-            }
-
+            <Grid container spacing={3}>
+                {movies.map((m) => (
+                    <Grid key={m.id}
+                        size={{ xs: 12, sm: 6, md: 4 }}
+                        sx={{ display: "flex", justifyContent: "center" }}
+                    >
+                        <MovieCard id={m.id} title={m.title} overview={m.overview} popularity={m.popularity} enableUserActions={loggedIn} image={m.image} />
+                    </Grid>
+                ))}
+            </Grid>
+            <div ref={targetRef}>{loading && <LinearProgress color="secondary" sx={{ mt: 3 }} />}</div>
         </Container >
     );
 }
@@ -88,7 +89,8 @@ function Movies({ movies, loading }: MoviesProps) {
 
 const mapStateToProps = (state: RootState) => ({
     movies: state.movies.top,
-    loading: state.movies.loading
+    loading: state.movies.loading,
+    hasMorePages: state.movies.hasMorePages
 })
 const connector = connect(mapStateToProps);
 export default connector(Movies);
