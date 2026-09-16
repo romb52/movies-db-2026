@@ -13,7 +13,6 @@ interface MoviesProps {
     loading: boolean
 }
 
-
 function Movies({ movies, loading }: MoviesProps) {
     const dispatch = useAppDispatch();
 
@@ -25,9 +24,6 @@ function Movies({ movies, loading }: MoviesProps) {
     }, [dispatch]);
 
     const [query, setQuery] = useState("");
-
-
-
 
     return (
         <Container sx={{ py: 9 }} >
