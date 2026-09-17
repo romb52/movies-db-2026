@@ -1,13 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link as RouterLink, Outlet } from 'react-router-dom';
 import { CssBaseline, createTheme, Box } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
 import { teal } from '@mui/material/colors';
 import { AppHeader } from "./AppHeader"
 import { AuthContext, AuthInfo, anonymousUser } from './AuthContext';
-
-
-
 
 
 const defaultTheme = createTheme(

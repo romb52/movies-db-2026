@@ -1,4 +1,4 @@
-import type { Action, Reducer } from "redux";
+//import type { Action, Reducer } from "redux";
 import { ActionWithPayload, createReducer } from "../redux/utils";
 import { AppThunk } from "../store";
 import { client } from "../api/tmdb";

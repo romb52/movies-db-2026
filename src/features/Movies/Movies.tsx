@@ -1,23 +1,19 @@
-import { fetchFirstPage, fetchNextPage, Movie, searchMovies } from "../../reducers/movies";
-import { connect } from "react-redux"
-import { RootState } from "../../store";
+import { fetchFirstPage, fetchNextPage, searchMovies } from "../../reducers/movies";
 import { MovieCard } from "./MovieCard";
 import { useContext, useEffect, useState } from "react";
-import { useAppDispatch } from "../../hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks";
 import { Box, Button, Container, Grid, LinearProgress, TextField, Typography } from "@mui/material";
 import { AuthContext, anonymousUser } from "../../AuthContext";
 import { useIntersectionObserver } from "../../hooks/useIntersectionObserver";
 
 
-interface MoviesProps {
-    movies: Movie[];
-    loading: boolean;
-    hasMorePages: boolean;
-}
-
-function Movies({ movies, loading, hasMorePages }: MoviesProps) {
+function Movies() {
     const [query, setQuery] = useState("");
     const dispatch = useAppDispatch();
+
+    const movies = useAppSelector((state) => state.movies.top);
+    const loading = useAppSelector((state) => state.movies.loading);
+    const hasMorePages = useAppSelector((state) => state.movies.hasMorePages);
 
     const auth = useContext(AuthContext);
     const loggedIn = auth.user !== anonymousUser;
@@ -25,12 +21,12 @@ function Movies({ movies, loading, hasMorePages }: MoviesProps) {
     const [targetRef, entry] = useIntersectionObserver();
 
     useEffect(() => {
-        if (entry?.isIntersecting && hasMorePages && !query ) {          
+        if (entry?.isIntersecting && hasMorePages && !query) {
             dispatch(fetchNextPage());
         }//
     }, [dispatch, entry?.isIntersecting, hasMorePages, query]);
 
-    
+
 
     return (
         <Container sx={{ py: 9 }} >
@@ -87,10 +83,4 @@ function Movies({ movies, loading, hasMorePages }: MoviesProps) {
 }
 
 
-const mapStateToProps = (state: RootState) => ({
-    movies: state.movies.top,
-    loading: state.movies.loading,
-    hasMorePages: state.movies.hasMorePages
-})
-const connector = connect(mapStateToProps);
-export default connector(Movies);
+export default Movies;
