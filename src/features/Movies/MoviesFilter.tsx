@@ -25,7 +25,7 @@ export function MoviesFilter({ onApply }: MoviesFilterProps) {
     const [keywordsLoading, setKeywordsLoading] = useState(false);
     const [keywordsOptions, setKeywordsOptions] = useState<KeywordItem[]>([]);
     const genres = useAppSelector((state) => state.movies.genres)
-    const { handleSubmit, control, } = useForm<Filters>({
+    const { handleSubmit, control, formState} = useForm<Filters>({
         defaultValues: {
             keywords: [],
             genres: []

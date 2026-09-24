@@ -1,4 +1,4 @@
-import { genres } from './../features/Movies/genres';
+//import { genres } from './../features/Movies/genres';
 //import { Movie } from './../reducers/movies';
 import configuration from "../configuration";
 import axios from "axios";
