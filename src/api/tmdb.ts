@@ -1,6 +1,8 @@
+import { genres } from './../features/Movies/genres';
 //import { Movie } from './../reducers/movies';
 import configuration from "../configuration";
 import axios from "axios";
+import { KeywordItem } from "../features/Movies/MoviesFilter";
 
 async function get<TBody>(relativeURL: string): Promise<TBody> {
 
@@ -57,6 +59,11 @@ interface Configuration {
     }
 }
 
+export interface MoviesFilters {
+keywords?: number[];
+genres?: number[]
+}
+
 export const client = {
     async getConfiguration() {
         return get<Configuration>("/configuration");
@@ -72,6 +79,33 @@ export const client = {
     },
     async searchMovies(query: string): Promise<MovieDetails[]> {
         const response = await get<PageResponse<MovieDetails>>(`/search/movie?query=${encodeURIComponent(query)}&page=1`);
+        return response.results;
+    },
+    async getMovies(page: number, filters: MoviesFilters  ) {
+        const params = new URLSearchParams ({
+            page: page.toString()
+        }); 
+
+        if (filters.keywords?.length){
+           params.append("with_keywords", filters.keywords.join("|")) 
+        }
+
+        
+        if (filters.genres?.length){
+           params.append("with_genres", filters.genres.join(",")) 
+        }
+
+        const query = params.toString();
+
+        const response = await get<PageResponse<MovieDetails>>(`/discover/movie?${query}`);
+        return {
+            results: response.results,
+            page: response.page,
+            totalPages: response.total_pages
+        }
+    },
+    async getKeywords(query: string) {
+        const response = await get<PageResponse<KeywordItem>>(`/search/keyword?query=${query}`);
         return response.results;
     }
 

@@ -1,45 +1,54 @@
 import { FilterAltOutlined } from "@mui/icons-material";
-import { Autocomplete, Button, FormControl, Paper, TextField } from "@mui/material";
+import { Autocomplete, Button, Checkbox, debounce, FormControl, FormControlLabel, FormGroup, FormLabel, Paper, TextField } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { client } from "../../api/tmdb";
+import { useMemo, useState } from "react";
+import { useAppSelector } from "../../hooks";
 
 
 
-const keywordOptions: KeywordItems[] = [
-    { id: 1, name: "brave" },
-    { id: 2, name: "love" },
-    { id: 3, name: "action" }
-];
-
-const selected: KeywordItems[] = [
-    { id: 2, name: "love" },
-    { id: 3, name: "action" }
-];
-
-interface KeywordItems {
+export interface KeywordItem {
     id: number;
     name: string;
 };
 
-interface Filters {
-    keywords: KeywordItems[],
+export interface Filters {
+    keywords: KeywordItem[],
+    genres: number[]
 };
 
-export function MoviesFilter() {
+interface MoviesFilterProps {
+    onApply(filters: Filters): void
+}
+
+export function MoviesFilter({ onApply }: MoviesFilterProps) {
+    const [keywordsLoading, setKeywordsLoading] = useState(false);
+    const [keywordsOptions, setKeywordsOptions] = useState<KeywordItem[]>([]);
+    const genres = useAppSelector((state) => state.movies.genres)
     const { handleSubmit, control, } = useForm<Filters>({
         defaultValues: {
-            keywords: []
+            keywords: [],
+            genres: []
         }
     }
     );
 
-    const fetchKeywords = (value: string) => {
-setKeywordsLoading(true); 
-const options= await client.getKeywords();
-    };
+    const fetchKeywords = useMemo(
+        () => debounce(async (query: string) => {
+            if (query) {
+                setKeywordsLoading(true);
+                const options = await client.getKeywords(query);
+                setKeywordsLoading(false);
+                setKeywordsOptions(options);
+            } else {
+                setKeywordsOptions([]);
+            }
+        }, 1000),
+        []
+    );
 
     return <Paper sx={{ m: 2, p: 0.5 }}>
-        <form>
+        <form onSubmit={handleSubmit(onApply)}>
             <FormControl
                 component={"fieldset"}
                 variant="standard"
@@ -52,8 +61,8 @@ const options= await client.getKeywords();
                         <Autocomplete
                             multiple
                             disablePortal
-                            loading={false}
-                            options={keywordOptions}
+                            loading={keywordsLoading}
+                            options={keywordsOptions}
                             filterOptions={x => x}
                             getOptionLabel={option => option.name}
                             onChange={(_, value) => onChange(value)}
@@ -65,8 +74,44 @@ const options= await client.getKeywords();
                     )} />
 
             </FormControl>
-            <Button type="submit" variant="contained" sx={{m: 2}} startIcon={<FilterAltOutlined/>}>
-                Apply filter 
+            <FormControl
+                component={"fieldset"}
+                variant="standard"
+                sx={{ m: 2, display: "block" }}
+            >
+                <FormLabel component="legend">Genres</FormLabel>
+                <FormGroup sx={{maxHeight: 500}}>
+                    <Controller
+                        name="genres"
+                        control={control}
+                        render={({ field }) => (
+                            <>
+                                {genres.map((genre) => (
+                                    <FormControlLabel
+                                        key={genre.id}
+                                        control={
+                                            <Checkbox
+                                                value={genre.id}
+                                                checked={field.value.includes(genre.id)}
+                                                onChange={(event, checked) => {
+                                                    const valueNumber = Number(event.target.value);
+                                                    if (checked) {
+                                                        field.onChange([...field.value, valueNumber]);
+                                                    } else {
+                                                        field.onChange(field.value.filter((value) => value !== valueNumber));
+                                                    }
+                                                }}
+                                            />
+                                        }
+                                        label={genre.name}
+                                    />
+                                ))}
+                            </>
+                        )} />
+                </FormGroup>
+            </FormControl>
+            <Button type="submit" variant="contained" sx={{ m: 2 }} startIcon={<FilterAltOutlined />}>
+                Apply filter
             </Button>
         </form>
     </Paper>

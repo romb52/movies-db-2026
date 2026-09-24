@@ -1,7 +1,8 @@
 //import type { Action, Reducer } from "redux";
 import { ActionWithPayload, createReducer } from "../redux/utils";
 import { AppThunk } from "../store";
-import { client } from "../api/tmdb";
+import { client, MoviesFilters } from "../api/tmdb";
+import { genres } from "../features/Movies/genres";
 
 
 export interface Movie {
@@ -12,18 +13,25 @@ export interface Movie {
   image?: string;
 }
 
+export interface Genre {
+  id: number;
+  name: string;
+}
+
 interface MovieState {
   top: Movie[];
   loading: boolean;
   page: number;
-  hasMorePages: boolean
+  hasMorePages: boolean;
+  genres: Genre[]
 }
 
 const initialState: MovieState = {
   top: [],
   loading: false,
   page: 0,
-  hasMorePages: true
+  hasMorePages: true,
+  genres,
 };
 
 const moviesLoaded = (movies: Movie[], page: number, hasMorePages: boolean) => ({
@@ -40,28 +48,32 @@ const moviesLoading = () => ({
   type: "movies/loading"
 });
 
+export const resetMovies = () => ({
+  type: "movies/reset"
+})
+
 export function fetchFirstPage(): AppThunk<Promise<void>> {
   return async (dispatch) => {
     dispatch(fetchPage(1));
   }
 }
 
-export function fetchNextPage(): AppThunk<Promise<void>> {
+export function fetchNextPage(filters: MoviesFilters = {}): AppThunk<Promise<void>> {
   return async (dispatch, getState) => {
     const nextPage = getState().movies.page + 1;
-    dispatch(fetchPage(nextPage));
+    dispatch(fetchPage(nextPage, filters));
   }
 }
 
-function fetchPage(page: number): AppThunk<Promise<void>> {
+function fetchPage(page: number, filters: MoviesFilters = {}): AppThunk<Promise<void>> {
   return async (dispatch) => {
     dispatch(moviesLoading());
 
     const config = await client.getConfiguration();
     const imageUrl = config.images.base_url;
-    const nowPlaying = await client.getNowPlaying(page);
+    const moviesResponse = await client.getMovies(page, filters);
 
-    const mappedResults: Movie[] = nowPlaying.results.map((m) => ({
+    const mappedResults: Movie[] = moviesResponse.results.map((m) => ({
       id: m.id,
       title: m.title,
       overview: m.overview,
@@ -69,7 +81,7 @@ function fetchPage(page: number): AppThunk<Promise<void>> {
       image: m.backdrop_path ? `${imageUrl}w780${m.backdrop_path}` : undefined
     }));
 
-    const hasMorePages = nowPlaying.page < nowPlaying.totalPages;
+    const hasMorePages = moviesResponse.page < moviesResponse.totalPages;
 
     dispatch(moviesLoaded(mappedResults, page, hasMorePages));
   }
@@ -124,6 +136,11 @@ const moviesReducer = createReducer<MovieState>(
       return {
         ...state,
         loading: true
+      }
+    },
+    "movies/reset": (state) => {
+      return {
+        ...initialState
       }
     }
   }
