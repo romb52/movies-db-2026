@@ -25,7 +25,8 @@ export function MoviesFilter({ onApply }: MoviesFilterProps) {
     const [keywordsLoading, setKeywordsLoading] = useState(false);
     const [keywordsOptions, setKeywordsOptions] = useState<KeywordItem[]>([]);
     const genres = useAppSelector((state) => state.movies.genres)
-    const { handleSubmit, control, formState} = useForm<Filters>({
+
+    const { handleSubmit, control, formState } = useForm<Filters>({
         defaultValues: {
             keywords: [],
             genres: []
@@ -80,7 +81,7 @@ export function MoviesFilter({ onApply }: MoviesFilterProps) {
                 sx={{ m: 2, display: "block" }}
             >
                 <FormLabel component="legend">Genres</FormLabel>
-                <FormGroup sx={{maxHeight: 500}}>
+                <FormGroup sx={{ maxHeight: 500 }}>
                     <Controller
                         name="genres"
                         control={control}
@@ -110,7 +111,7 @@ export function MoviesFilter({ onApply }: MoviesFilterProps) {
                         )} />
                 </FormGroup>
             </FormControl>
-            <Button type="submit" variant="contained" sx={{ m: 2 }} startIcon={<FilterAltOutlined />}>
+            <Button type="submit" variant="contained" sx={{ m: 2 }} startIcon={<FilterAltOutlined />} disabled={!formState.isDirty}>
                 Apply filter
             </Button>
         </form>

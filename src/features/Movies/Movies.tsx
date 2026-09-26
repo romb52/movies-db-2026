@@ -1,4 +1,4 @@
-import { fetchFirstPage, fetchNextPage, resetMovies, searchMovies } from "../../reducers/movies";
+import { fetchFirstPage, fetchGenres, fetchNextPage, resetMovies, searchMovies } from "../../reducers/movies";
 import { MovieCard } from "./MovieCard";
 import { useContext, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks";
@@ -24,7 +24,8 @@ function Movies() {
     const [targetRef, entry] = useIntersectionObserver();
 
     useEffect(() => {
-        dispatch(resetMovies())
+        dispatch(resetMovies()); 
+        dispatch(fetchGenres());
     }, [dispatch]);
 
     useEffect(() => {

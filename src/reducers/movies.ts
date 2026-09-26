@@ -1,8 +1,9 @@
+import { genres } from './../features/Movies/genres';
 //import type { Action, Reducer } from "redux";
 import { ActionWithPayload, createReducer } from "../redux/utils";
 import { AppThunk } from "../store";
 import { client, MoviesFilters } from "../api/tmdb";
-import { genres } from "../features/Movies/genres";
+//import { genres } from "../features/Movies/genres";
 
 
 export interface Movie {
@@ -31,7 +32,7 @@ const initialState: MovieState = {
   loading: false,
   page: 0,
   hasMorePages: true,
-  genres,
+  genres: []
 };
 
 const moviesLoaded = (movies: Movie[], page: number, hasMorePages: boolean) => ({
@@ -50,6 +51,11 @@ const moviesLoading = () => ({
 
 export const resetMovies = () => ({
   type: "movies/reset"
+});
+
+const genresLoaded = (genres: Genre[]) => ({
+  type: "movies/genresLoaded",
+  payload: genres
 })
 
 export function fetchFirstPage(): AppThunk<Promise<void>> {
@@ -107,6 +113,13 @@ export function searchMovies(query: string): AppThunk<Promise<void>> {
   }
 }
 
+export function fetchGenres(): AppThunk<Promise<void>> {
+  return async (dispatch) => {
+    const genres = await client.getGenreList();
+    dispatch(genresLoaded(genres));
+  };
+}
+
 
 
 
@@ -140,7 +153,17 @@ const moviesReducer = createReducer<MovieState>(
     },
     "movies/reset": (state) => {
       return {
-        ...initialState
+        ...state,
+        top: [],
+        loading: false,
+        page: 0,
+        hasMorePages: true
+      }
+    },
+    "movies/genresLoaded": (state, action: ActionWithPayload<Genre[]>) => {
+      return {
+        ...state,
+        genres: action.payload
       }
     }
   }

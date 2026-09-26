@@ -3,6 +3,7 @@
 import configuration from "../configuration";
 import axios from "axios";
 import { KeywordItem } from "../features/Movies/MoviesFilter";
+import { Genre } from "../reducers/movies";
 
 async function get<TBody>(relativeURL: string): Promise<TBody> {
 
@@ -64,6 +65,10 @@ keywords?: number[];
 genres?: number[]
 }
 
+interface GenreResponse{
+    genres: Genre[];
+}
+
 export const client = {
     async getConfiguration() {
         return get<Configuration>("/configuration");
@@ -107,6 +112,10 @@ export const client = {
     async getKeywords(query: string) {
         const response = await get<PageResponse<KeywordItem>>(`/search/keyword?query=${query}`);
         return response.results;
-    }
+    },
+    async getGenreList (){
+         const response = await get<GenreResponse>("/genre/movie/list");
+        return response.genres;
+    } 
 
 }
