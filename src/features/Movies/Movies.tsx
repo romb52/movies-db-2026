@@ -1,6 +1,6 @@
 import { fetchFirstPage, fetchGenres, fetchNextPage, resetMovies, searchMovies } from "../../reducers/movies";
 import MovieCard from "./MovieCard";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { Box, Button, Container, Grid, LinearProgress, TextField, Typography } from "@mui/material";
 import { AuthContext, anonymousUser } from "../../AuthContext";
@@ -42,8 +42,12 @@ function Movies() {
         alert(`not implemented! Action: ${auth.user.name} is adding movie ${id} to favorites`);
     }, [auth.user.name])
 
+       const cardInfo= useMemo (()=> ({
+            type: "movie"
+        }), [])
 
     return (
+     
         <Grid container spacing={2} sx={{ flexWrap: "nowrap" }}>
             <Grid size="auto" sx={{ py: 9 }}>
                 <MoviesFilter onApply={(f) => {
@@ -105,6 +109,7 @@ function Movies() {
                                     enableUserActions={loggedIn}
                                     image={m.image}
                                     onAddFavorite={handleAddToFavorite}
+                                    cardInfo={cardInfo}
                                 />
                             </Grid>
                         ))}

@@ -11,12 +11,21 @@ interface MovieCardProps {
     overview: string;
     popularity: number;
     enableUserActions?: boolean;
-    onAddFavorite?(id:number): void;
+    onAddFavorite?(id: number): void;
     image?: string;
+    cardInfo: { type: string }
 }
 
 
-function MovieCard({ id, title, overview, popularity, enableUserActions, onAddFavorite, image = "/thumbnail.jpg" }: MovieCardProps) {
+function MovieCard({ id,
+    title,
+    overview,
+    popularity,
+    enableUserActions,
+    onAddFavorite,
+    image = "/thumbnail.jpg",
+    cardInfo
+}: MovieCardProps) {
     const [modalOpen, setModalOpen] = useState(false);
     const navigate = useNavigate();
     console.count("Moviecard");
@@ -45,6 +54,7 @@ function MovieCard({ id, title, overview, popularity, enableUserActions, onAddFa
                         color="text.secondary"
                     >{overview}</Typography>
                     <Typography variant="button">{popularity}</Typography>
+                    <Typography variant="caption">{cardInfo.type}</Typography>
                 </CardContent>
                 <CardActions>
                     <Button onClick={() => setModalOpen(true)}>
