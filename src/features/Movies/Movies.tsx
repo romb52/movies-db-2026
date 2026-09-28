@@ -1,6 +1,6 @@
 import { fetchFirstPage, fetchGenres, fetchNextPage, resetMovies, searchMovies } from "../../reducers/movies";
-import { MovieCard } from "./MovieCard";
-import { useContext, useEffect, useState } from "react";
+import MovieCard from "./MovieCard";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { Box, Button, Container, Grid, LinearProgress, TextField, Typography } from "@mui/material";
 import { AuthContext, anonymousUser } from "../../AuthContext";
@@ -24,7 +24,7 @@ function Movies() {
     const [targetRef, entry] = useIntersectionObserver();
 
     useEffect(() => {
-        dispatch(resetMovies()); 
+        dispatch(resetMovies());
         dispatch(fetchGenres());
     }, [dispatch]);
 
@@ -38,7 +38,9 @@ function Movies() {
         }
     }, [dispatch, entry?.isIntersecting, hasMorePages, query, filters]);
 
-
+    const handleAddToFavorite = useCallback((id: number) => {
+        alert(`not implemented! Action: ${auth.user.name} is adding movie ${id} to favorites`);
+    }, [auth.user.name])
 
 
     return (
@@ -90,12 +92,20 @@ function Movies() {
                 </Typography> */}
                     <Grid container spacing={3}>
                         {!loading && !movies.length && <Typography variant="h6">No movies were found that match your query.</Typography>}
-                        {movies.map((m) => (
-                            <Grid key={m.id}
+                        {movies.map((m, i) => (
+                            <Grid key={`${m.id}-${i}`}
                                 size={{ xs: 12, sm: 6, md: 4 }}
                                 sx={{ display: "flex", justifyContent: "center" }}
                             >
-                                <MovieCard id={m.id} title={m.title} overview={m.overview} popularity={m.popularity} enableUserActions={loggedIn} image={m.image} />
+                                <MovieCard
+                                    id={m.id}
+                                    title={m.title}
+                                    overview={m.overview}
+                                    popularity={m.popularity}
+                                    enableUserActions={loggedIn}
+                                    image={m.image}
+                                    onAddFavorite={handleAddToFavorite}
+                                />
                             </Grid>
                         ))}
                     </Grid>

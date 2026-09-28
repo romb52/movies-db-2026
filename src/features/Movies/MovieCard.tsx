@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { Modal } from "../../components/Modal/Modal";
 import { Button, Card, CardActions, CardContent, CardMedia, IconButton, Tooltip, Typography } from "@mui/material";
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -11,13 +11,15 @@ interface MovieCardProps {
     overview: string;
     popularity: number;
     enableUserActions?: boolean;
+    onAddFavorite?(id:number): void;
     image?: string;
 }
 
 
-export function MovieCard({ id, title, overview, popularity, enableUserActions, image = "/thumbnail.jpg" }: MovieCardProps) {
+function MovieCard({ id, title, overview, popularity, enableUserActions, onAddFavorite, image = "/thumbnail.jpg" }: MovieCardProps) {
     const [modalOpen, setModalOpen] = useState(false);
     const navigate = useNavigate();
+    console.count("Moviecard");
     return (
         <>
             <Card sx={{
@@ -49,7 +51,7 @@ export function MovieCard({ id, title, overview, popularity, enableUserActions, 
                         Details
                     </Button>
                     {enableUserActions && (<Tooltip title="Add to favorites">
-                        <IconButton>
+                        <IconButton onClick={() => onAddFavorite?.(id)}>
                             <FavoriteIcon />
                         </IconButton>
                     </Tooltip>)}
@@ -59,11 +61,9 @@ export function MovieCard({ id, title, overview, popularity, enableUserActions, 
             {modalOpen && (
                 <Modal>
                     <h2>Перейти до деталей фільму?</h2>
-
                     <Button onClick={() => setModalOpen(false)}>
                         Cancel
                     </Button>
-
                     <Button onClick={() => {
                         setModalOpen(false);
                         navigate(`/movies/${id}`);
@@ -73,7 +73,7 @@ export function MovieCard({ id, title, overview, popularity, enableUserActions, 
                     </Button>
                 </Modal>
             )}
-
         </>)
-
 }
+
+export default memo(MovieCard);

@@ -34,17 +34,19 @@ export function MoviesFilter({ onApply }: MoviesFilterProps) {
     }
     );
 
+    const fetchKeywordsOption = async (query: string) => {
+        if (query) {
+            setKeywordsLoading(true);
+            const options = await client.getKeywords(query);
+            setKeywordsLoading(false);
+            setKeywordsOptions(options);
+        } else {
+            setKeywordsOptions([]);
+        }
+    };
+
     const fetchKeywords = useMemo(
-        () => debounce(async (query: string) => {
-            if (query) {
-                setKeywordsLoading(true);
-                const options = await client.getKeywords(query);
-                setKeywordsLoading(false);
-                setKeywordsOptions(options);
-            } else {
-                setKeywordsOptions([]);
-            }
-        }, 1000),
+        () => debounce(fetchKeywordsOption, 1000),
         []
     );
 
