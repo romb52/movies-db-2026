@@ -4,7 +4,7 @@ import { anonymousUser, AuthContext } from "../../AuthContext";
 import { useContext } from "react";
 
 
-export function Home() {
+export default function Home() {
     const auth = useContext(AuthContext);
     const loggedIn = auth.user !== anonymousUser;
     const greeting = loggedIn ? `${auth.user.name}, explore movies today with us!` : "Explore movies today with us!"

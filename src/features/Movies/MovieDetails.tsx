@@ -8,7 +8,7 @@ import {
     Typography
 } from "@mui/material";
 
-export function MovieDetails() {
+export default function MovieDetails() {
     const { id } = useParams();
 
     const movies = useSelector(

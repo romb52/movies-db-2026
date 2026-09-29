@@ -5,7 +5,7 @@ import MapView from "./MapView";
 
 
 
-export function About (){
+export default function About (){
     return <Container sx={{py: 9}}>
         <CountdownText/>     
         <CountDownVideo/> 

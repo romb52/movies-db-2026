@@ -110,7 +110,7 @@ export function MoviesFilter({ onApply }: MoviesFilterProps) {
                         )} />
                 </FormGroup>
             </FormControl>
-            <Button type="submit" variant="contained" sx={{ m: 2 }} startIcon={<FilterAltOutlined />}>
+            <Button type="submit" variant="contained" sx={{ m: 2 }} startIcon={<FilterAltOutlined />} disabled={!formState.isDirty}>
                 Apply filter
             </Button>
         </form>

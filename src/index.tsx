@@ -4,31 +4,44 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
 
-import React from 'react';
+import React, { Profiler, Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import { About } from './features/About/About';
-import Movies from './features/Movies/Movies';
+import { ErrorBoundary } from 'react-error-boundary';
 import { Provider } from 'react-redux';
 import store from './store';
-import { MovieDetails } from './features/Movies/MovieDetails';
-import { Home } from './features/Home/Home';
-import { ErrorBoundary } from 'react-error-boundary';
+const About = lazy(() => import('./features/About/About'));
+const Movies = lazy(() => import('./features/Movies/Movies'));
+const MovieDetails = lazy(() => import('./features/Movies/MovieDetails'));
+const Home = lazy(() => import('./features/Home/Home'));
+
 //import { ErrorBoundary } from './ErrorBoundary';
 
 
-function AppEntrypoint (){
+function AppEntrypoint() {
   return <Provider store={store}>
-    <ErrorBoundary fallback= {<h2>Oops! Something weny wrong...</h2>}><App /></ErrorBoundary>
-    </Provider>
+    <ErrorBoundary fallback={<h2>Oops! Something weny wrong...</h2>}><App /></ErrorBoundary>
+  </Provider>
+}
+
+function onRender(
+  id: string,
+  phase: "mount" | "update" | "nested-update",
+  actualDuration: number
+) {
+  console.log({
+    id,
+    phase,
+    actualDuration,
+  })
 }
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <AppEntrypoint/>,
+    element: <AppEntrypoint />,
     //element: <Provider store={store}><App /></Provider>,
     children: [
       {
@@ -37,7 +50,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/about",
-        element: <About />
+        element: (<Profiler id="About" onRender={onRender}><About /></Profiler>)
       },
       {
         path: "/movies",
@@ -57,7 +70,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <Suspense fallback={<h2> Loading...</h2>}>
+      <RouterProvider router={router} />
+    </Suspense>
   </React.StrictMode>
 );
 
