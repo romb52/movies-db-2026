@@ -1,8 +1,10 @@
 //import type { Action, Reducer } from "redux";
-import { ActionWithPayload, createReducer } from "../redux/utils";
+//import { ActionWithPayload, createReducer } from "../redux/utils";
+
 import { AppThunk } from "../store";
 import { client, MoviesFilters } from "../api/tmdb";
 import { genres } from "../features/Movies/genres";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 
 export interface Movie {
@@ -34,23 +36,23 @@ const initialState: MovieState = {
   genres,
 };
 
-const moviesLoaded = (movies: Movie[], page: number, hasMorePages: boolean) => ({
-  type: "movies/loaded",
-  payload: { movies, page, hasMorePages }
-});
+// const moviesLoaded = (movies: Movie[], page: number, hasMorePages: boolean) => ({
+//   type: "movies/loaded",
+//   payload: { movies, page, hasMorePages }
+// });
 
-const searchMoviesLoaded = (movies: Movie[]) => ({
-  type: "movies/searchloaded",
-  payload: movies
-});
+// const searchMoviesLoaded = (movies: Movie[]) => ({
+//   type: "movies/searchloaded",
+//   payload: movies
+// });
 
-const moviesLoading = () => ({
-  type: "movies/loading"
-});
+// const moviesLoading = () => ({
+//   type: "movies/loading"
+// });
 
-export const resetMovies = () => ({
-  type: "movies/reset"
-})
+// export const resetMovies = () => ({
+//   type: "movies/reset"
+// })
 
 export function fetchFirstPage(): AppThunk<Promise<void>> {
   return async (dispatch) => {
@@ -83,12 +85,12 @@ function fetchPage(page: number, filters: MoviesFilters = {}): AppThunk<Promise<
 
     const hasMorePages = moviesResponse.page < moviesResponse.totalPages;
 
-    dispatch(moviesLoaded(mappedResults, page, hasMorePages));
+    dispatch(moviesLoaded({ movies: mappedResults, page, hasMorePages }));
   }
 }
 
 export function searchMovies(query: string): AppThunk<Promise<void>> {
-  return async (dispatch, getState) => {
+  return async (dispatch) => {
     dispatch(moviesLoading());
 
     const config = await client.getConfiguration();
@@ -107,43 +109,74 @@ export function searchMovies(query: string): AppThunk<Promise<void>> {
   }
 }
 
-
-
-
-
-const moviesReducer = createReducer<MovieState>(
+const moviesSlice = createSlice({
+  name: "movies",
   initialState,
-  {
-    "movies/loaded": (state, action: ActionWithPayload<{ movies: Movie[], page: number, hasMorePages: boolean }>) => {
-      return {
-        ...state,
-        top: action.payload.page === 1
-          ? action.payload.movies
-          : [...state.top, ...action.payload.movies],
-        page: action.payload.page,
-        hasMorePages: action.payload.hasMorePages,
-        loading: false
-      }
+  reducers: {
+    moviesLoading: (state) => {
+      state.loading = true;
     },
-    "movies/searchloaded": (state, action: ActionWithPayload<Movie[]>) => {
-      return {
-        ...state,
-        top: action.payload,
-        loading: false
-      }
+    moviesLoaded: (state, action: PayloadAction<{
+      movies: Movie[],
+      page: number,
+      hasMorePages: boolean
+    }>) => {
+      state.top = action.payload.page === 1
+        ? action.payload.movies
+        : [...state.top, ...action.payload.movies];
+        state.page = action.payload.page;
+      state.hasMorePages = action.payload.hasMorePages;
+      state.loading = false;
     },
-    "movies/loading": (state, action) => {
-      return {
-        ...state,
-        loading: true
-      }
+    searchMoviesLoaded: (state, action: PayloadAction<Movie[]>) => {
+      state.top = action.payload;
+      state.loading = false;
     },
-    "movies/reset": (state) => {
-      return {
-        ...initialState
-      }
-    }
+    resetMovies: () => initialState
   }
-)
+})
 
-export default moviesReducer;
+
+// const moviesReducer = createReducer<MovieState>(
+//   initialState,
+//   {
+//     "movies/loaded": (state, action: ActionWithPayload<{ movies: Movie[], page: number, hasMorePages: boolean }>) => {
+//       return {
+//         ...state,
+//         top: action.payload.page === 1
+//           ? action.payload.movies
+//           : [...state.top, ...action.payload.movies],
+//         page: action.payload.page,
+//         hasMorePages: action.payload.hasMorePages,
+//         loading: false
+//       }
+//     },
+//     "movies/searchloaded": (state, action: ActionWithPayload<Movie[]>) => {
+//       return {
+//         ...state,
+//         top: action.payload,
+//         loading: false
+//       }
+//     },
+//     "movies/loading": (state, action) => {
+//       return {
+//         ...state,
+//         loading: true
+//       }
+//     },
+//     "movies/reset": (state) => {
+//       return {
+//         ...initialState
+//       }
+//     }
+//   }
+// )
+
+export const {
+  moviesLoading,
+  moviesLoaded,
+  searchMoviesLoaded,
+  resetMovies
+} = moviesSlice.actions;
+
+export default moviesSlice.reducer;
