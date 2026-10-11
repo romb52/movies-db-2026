@@ -1,12 +1,10 @@
-//import { fetchFirstPage, fetchNextPage, resetMovies, searchMovies } from "../../reducers/movies";
 import { MovieCard } from "./MovieCard";
 import { useCallback, useContext, useEffect, useState } from "react";
-//import { useAppDispatch, useAppSelector } from "../../hooks";
 import { Box, Button, Container, Grid, LinearProgress, TextField, Typography } from "@mui/material";
 import { AuthContext, anonymousUser } from "../../AuthContext";
 import { useIntersectionObserver } from "../../hooks/useIntersectionObserver";
-import {  MoviesFilter } from "./MoviesFilter";
-import { MoviesFilters, MoviesQuery, useGetConfigurationQuery, useGetMoviesQuery } from "../../services/tmdb";
+import { MoviesFilter } from "./MoviesFilter";
+import { MoviesFilters, MoviesQuery, useGetConfigurationQuery, useGetMoviesQuery, useSearchMoviesQuery } from "../../services/tmdb";
 
 const initialQuery: MoviesQuery = {
   page: 1,
@@ -19,14 +17,16 @@ function Movies() {
   const { data: configuration } = useGetConfigurationQuery();
   const { data, isFetching } = useGetMoviesQuery(moviesQuery);
 
- // const [filters, setFilters] = useState<Filters>();
-  const [query, setQuery] = useState("");
-  //const dispatch = useAppDispatch();
+  const [query, setQuery] = useState<string>("");
 
-  //const movies = useAppSelector((state) => state.movies.top);
-  const movies = data?.results;
-  //const loading = useAppSelector((state) => state.movies.loading);
-  //const hasMorePages = useAppSelector((state) => state.movies.hasMorePages);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  const { data: searchMovie } = useSearchMoviesQuery(searchTerm);
+
+  const isSearching = searchTerm.trim() !=="";
+
+  const movies = isSearching ? searchMovie?.results : data?.results;
+
   const hasMorePages = data?.hasMorePages;
   function formatImageUrl(path?: string) {
     return path && configuration ? `${configuration?.images.base_url}w780${path}` : undefined;
@@ -37,27 +37,11 @@ function Movies() {
 
   const onIntersect = useCallback(() => {
     if (hasMorePages) {
-        setmoviesQuery(q => ({ ...q, page: q.page + 1 }));
+      setmoviesQuery((q) => ({ ...q, page: q.page + 1 }));
     }
   }, [hasMorePages]);
 
-  const [targetRef] = useIntersectionObserver({onIntersect});
-
-  //   useEffect(() => {
-  //     dispatch(resetMovies());
-  //   }, [dispatch]);
-
-//   useEffect(() => {
-//     if (entry?.isIntersecting && hasMorePages && !query) {
-//       const moviesFilters = filters
-//         ? {
-//             keywords: filters.keywords.map((k) => k.id),
-//             genres: filters.genres,
-//           }
-//         : undefined;
-//       dispatch(fetchNextPage(moviesFilters));
-//     }
-//   }, [dispatch, entry?.isIntersecting, hasMorePages, query, filters]);
+  const [targetRef] = useIntersectionObserver({ onIntersect });
 
   return (
     <Grid container spacing={2} sx={{ flexWrap: "nowrap" }}>
@@ -65,14 +49,12 @@ function Movies() {
         <MoviesFilter
           onApply={(f) => {
             const moviesFilters: MoviesFilters = {
-                keywords: f.keywords.map((k)=> k.id),
-                genres: f.genres,
-            }
-            // dispatch(resetMovies());
-            //setFilters(f);
+              keywords: f.keywords.map((k) => k.id),
+              genres: f.genres,
+            };
             setmoviesQuery({
-                page: 1,
-                filters: moviesFilters,
+              page: 1,
+              filters: moviesFilters,
             });
           }}
         />
@@ -93,7 +75,8 @@ function Movies() {
               onClick={() => {
                 const value = query.trim();
                 if (value) {
-                //   dispatch(searchMovies(value));
+                  //   dispatch(searchMovies(value));
+                  setSearchTerm(value);
                 }
               }}
             >
@@ -103,7 +86,8 @@ function Movies() {
               variant="contained"
               onClick={() => {
                 setQuery("");
-                // dispatch(fetchFirstPage());
+                setSearchTerm("");
+                setmoviesQuery(initialQuery);
               }}
             >
               Now playing!

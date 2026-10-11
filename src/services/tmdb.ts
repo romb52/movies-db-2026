@@ -57,10 +57,10 @@ export const tmdbApi = createApi({
     getConfiguration: builder.query<Configuration, void>({
       query: () => "/configuration",
     }),
-    getNowPlaying: builder.query<PageResponse<MovieDetails>, number>({
+    getNowPlaying: builder.query<MoviesResponse, number>({
       query: (page = 1) => `/movie/now_playing?page=${page}`,
     }),
-    searchMovies: builder.query<PageResponse<MovieDetails>, string>({
+    searchMovies: builder.query<MoviesResponse, string>({
       query: (query) => `/search/movie?query=${encodeURIComponent(query)}&page=1`,
     }),
     getMovies: builder.query<MoviesResponse, MoviesQuery>({
@@ -126,4 +126,5 @@ export const {
   useGetMoviesQuery,
   useGetNowPlayingQuery,
   useGetMovieDetailsQuery,
+  useSearchMoviesQuery
 } = tmdbApi;
