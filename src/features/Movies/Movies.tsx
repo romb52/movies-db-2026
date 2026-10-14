@@ -58,6 +58,8 @@ function Movies() {
               companies: f.companies.map((c) => c.id),
               genres: f.genres,
             };
+            setSearchTerm("");
+            setQuery("");
             setmoviesQuery({
               page: 1,
               filters: moviesFilters,
@@ -81,8 +83,8 @@ function Movies() {
               onClick={() => {
                 const value = query.trim();
                 if (value) {
-                  //   dispatch(searchMovies(value));
                   setSearchTerm(value);
+                 //setQuery("");
                 }
               }}
             >
