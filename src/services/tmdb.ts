@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import configuration from "../configuration";
-import { KeywordItem } from "../features/Movies/MoviesFilter";
+import { CompanyItem, KeywordItem } from "../features/Movies/MoviesFilter";
 
 interface Configuration {
   images: {
@@ -36,6 +36,7 @@ interface PageResponse<TResults> {
 
 export interface MoviesFilters {
   keywords?: number[];
+  companies?: number[];
   genres?: number[];
 }
 
@@ -57,10 +58,10 @@ export const tmdbApi = createApi({
     getConfiguration: builder.query<Configuration, void>({
       query: () => "/configuration",
     }),
-    getNowPlaying: builder.query<MoviesResponse, number>({
+    getNowPlaying: builder.query<PageResponse<MovieDetails>, number>({
       query: (page = 1) => `/movie/now_playing?page=${page}`,
     }),
-    searchMovies: builder.query<MoviesResponse, string>({
+    searchMovies: builder.query<PageResponse<MovieDetails>, string>({
       query: (query) => `/search/movie?query=${encodeURIComponent(query)}&page=1`,
     }),
     getMovies: builder.query<MoviesResponse, MoviesQuery>({
@@ -71,6 +72,10 @@ export const tmdbApi = createApi({
 
         if (filters.keywords?.length) {
           params.append("with_keywords", filters.keywords.join("|"));
+        }
+
+         if (filters.companies?.length) {
+          params.append("with_companies", filters.companies.join("|"));
         }
 
         if (filters.genres?.length) {
@@ -106,8 +111,12 @@ export const tmdbApi = createApi({
       },
     }),
     getKeywords: builder.query<KeywordItem[], string>({
-      query: (query) => `/search/keyword?query=${query}`,
+      query: (query) => `/search/keyword?query=${query}`,     
       transformResponse: (response: PageResponse<KeywordItem>) => response.results,
+    }),
+     getCompany: builder.query<CompanyItem[], string>({
+      query: (query) => `/search/company?query=${query}`,
+      transformResponse: (response: PageResponse<CompanyItem>) => response.results,
     }),
     getGenres: builder.query<Genre[], void>({
       query: () => "/genre/movie/list",
@@ -126,5 +135,6 @@ export const {
   useGetMoviesQuery,
   useGetNowPlayingQuery,
   useGetMovieDetailsQuery,
-  useSearchMoviesQuery
+  useSearchMoviesQuery,
+  useGetCompanyQuery,
 } = tmdbApi;

@@ -21,7 +21,12 @@ function Movies() {
 
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const { data: searchMovie } = useSearchMoviesQuery(searchTerm);
+  const {
+  data: searchMovie,
+  isFetching: searchFetching,
+} = useSearchMoviesQuery(searchTerm, {
+  skip: !searchTerm.trim(),
+});
 
   const isSearching = searchTerm.trim() !=="";
 
@@ -50,6 +55,7 @@ function Movies() {
           onApply={(f) => {
             const moviesFilters: MoviesFilters = {
               keywords: f.keywords.map((k) => k.id),
+              companies: f.companies.map((c) => c.id),
               genres: f.genres,
             };
             setmoviesQuery({

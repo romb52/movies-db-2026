@@ -16,15 +16,21 @@ import { Controller, useForm } from "react-hook-form";
 //import { client } from "../../api/tmdb";
 import { useMemo, useState } from "react";
 //import { useAppSelector } from "../../hooks";
-import { useGetGenresQuery, useGetKeywordsQuery } from "../../services/tmdb";
+import { useGetCompanyQuery, useGetGenresQuery, useGetKeywordsQuery } from "../../services/tmdb";
 
 export interface KeywordItem {
   id: number;
   name: string;
 }
 
+export interface CompanyItem {
+  id: number;
+  name: string;
+}
+
 export interface Filters {
   keywords: KeywordItem[];
+  companies: CompanyItem[];
   genres: number[];
 }
 
@@ -34,14 +40,16 @@ interface MoviesFilterProps {
 
 export function MoviesFilter({ onApply }: MoviesFilterProps) {
   const [keywordsQuery, setKeywordsQuery] = useState<string>("");
+  const [companyQuery, setCompanyQuery] = useState<string>("");
+  
   const { data: keywordsOptions = [], isLoading: keywordsLoading } = useGetKeywordsQuery(keywordsQuery, { skip: !keywordsQuery });
+  const { data: companyOptions = [], isLoading: companyLoading } = useGetCompanyQuery(companyQuery, { skip: !companyQuery });
   const { data: genres = [], isLoading: genresLoading } = useGetGenresQuery();
-  //const [keywordsLoading, setKeywordsLoading] = useState(false);
-  //const [keywordsOptions, setKeywordsOptions] = useState<KeywordItem[]>([]);
-  //const genres = useAppSelector((state) => state.movies.genres);
+
   const { handleSubmit, control, formState } = useForm<Filters>({
     defaultValues: {
       keywords: [],
+      companies: [],
       genres: [],
     },
   });
@@ -50,6 +58,14 @@ export function MoviesFilter({ onApply }: MoviesFilterProps) {
     () =>
       debounce((query: string) => {
         setKeywordsQuery(query);
+      }, 1000),
+    []
+  );
+
+    const fetchCompany = useMemo(
+    () =>
+      debounce((query: string) => {
+        setCompanyQuery(query);
       }, 1000),
     []
   );
@@ -74,6 +90,27 @@ export function MoviesFilter({ onApply }: MoviesFilterProps) {
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 renderInput={(params) => <TextField {...params} label="Keywords" />}
                 onInputChange={(_, value) => fetchKeywords(value)}
+              />
+            )}
+          />
+        </FormControl>
+        <FormControl component={"fieldset"} variant="standard" sx={{ m: 2, display: "block" }}>
+          <Controller
+            name="companies"
+            control={control}
+            render={({ field: { onChange, value } }) => (
+              <Autocomplete
+                multiple
+                disablePortal
+                loading={companyLoading}
+                options={companyOptions}
+                filterOptions={(x) => x}
+                getOptionLabel={(option) => option.name}
+                onChange={(_, value) => onChange(value)}
+                value={value}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                renderInput={(params) => <TextField {...params} label="Company" />}
+                onInputChange={(_, value) => fetchCompany(value)}
               />
             )}
           />
