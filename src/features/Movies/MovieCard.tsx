@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Modal } from "../../components/Modal/Modal";
 import { Button, Card, CardActions, CardContent, CardMedia, IconButton, Tooltip, Typography } from "@mui/material";
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import { useAddFavoriteMutation } from "../../services/tmdb";
 
 
 interface MovieCardProps {
@@ -17,7 +18,25 @@ interface MovieCardProps {
 
 export function MovieCard({ id, title, overview, popularity, enableUserActions, image = "/thumbnail.jpg" }: MovieCardProps) {
     const [modalOpen, setModalOpen] = useState(false);
+    const [isAddedToFavorite, setIsAddedToFavorite] = useState(false);
     const navigate = useNavigate();
+
+const[addFavorite, {isLoading}] = useAddFavoriteMutation(); 
+
+const onAddToFavorite = async () => {
+    const nextFavoriteState = ! isAddedToFavorite
+    try {
+        await addFavorite({
+            movieId: id,
+            favorite: nextFavoriteState,            
+        }).unwrap();
+        setIsAddedToFavorite(nextFavoriteState);
+        console.log  (nextFavoriteState ? ("Фільм додано до улюблених"): ("Фільм видалено з улюблених")) ;
+    } catch (error) {
+        console.error("Помилка додавання до улюблених:", error);
+    }
+}
+
     return (
         <>
             <Card sx={{
@@ -49,8 +68,8 @@ export function MovieCard({ id, title, overview, popularity, enableUserActions, 
                         Details
                     </Button>
                     {enableUserActions && (<Tooltip title="Add to favorites">
-                        <IconButton>
-                            <FavoriteIcon />
+                        <IconButton onClick={onAddToFavorite} disabled={isLoading}>
+                            <FavoriteIcon color={isAddedToFavorite ? "primary" : "inherit"} />
                         </IconButton>
                     </Tooltip>)}
                 </CardActions>

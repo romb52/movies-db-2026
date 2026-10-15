@@ -55,11 +55,8 @@ function Movies() {
           onApply={(f) => {
             const moviesFilters: MoviesFilters = {
               keywords: f.keywords.map((k) => k.id),
-              companies: f.companies.map((c) => c.id),
               genres: f.genres,
             };
-            setSearchTerm("");
-            setQuery("");
             setmoviesQuery({
               page: 1,
               filters: moviesFilters,
@@ -82,9 +79,8 @@ function Movies() {
               variant="contained"
               onClick={() => {
                 const value = query.trim();
-                if (value) {
+                if (value) {                  
                   setSearchTerm(value);
-                 //setQuery("");
                 }
               }}
             >

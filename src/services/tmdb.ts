@@ -74,7 +74,7 @@ export const tmdbApi = createApi({
           params.append("with_keywords", filters.keywords.join("|"));
         }
 
-         if (filters.companies?.length) {
+        if (filters.companies?.length) {
           params.append("with_companies", filters.companies.join("|"));
         }
 
@@ -111,10 +111,10 @@ export const tmdbApi = createApi({
       },
     }),
     getKeywords: builder.query<KeywordItem[], string>({
-      query: (query) => `/search/keyword?query=${query}`,     
+      query: (query) => `/search/keyword?query=${query}`,
       transformResponse: (response: PageResponse<KeywordItem>) => response.results,
     }),
-     getCompany: builder.query<CompanyItem[], string>({
+    getCompany: builder.query<CompanyItem[], string>({
       query: (query) => `/search/company?query=${query}`,
       transformResponse: (response: PageResponse<CompanyItem>) => response.results,
     }),
@@ -125,7 +125,43 @@ export const tmdbApi = createApi({
     getMovieDetails: builder.query<MovieDetails, number>({
       query: (id) => `/movie/${id}`,
     }),
+    addFavorite: builder.mutation<void, { movieId: number; favorite: boolean }>({
+      query: ({ movieId, favorite }) => ({
+        url: `/account/${configuration.apiAccountId}/favorite`,
+        method: "POST",
+        body: {
+          media_type: "movie",
+          media_id: movieId,
+          favorite,
+        },
+      }),
+    }),
+     getFavorite: builder.query<MoviesResponse, number>({
+    query: (page = 1) => `/account/${configuration.apiAccountId}/favorite/movies?page=${page}`,
+    transformResponse: (response: PageResponse<MovieDetails>, _, arg) => {
+      return {
+        results: response.results,
+        lastPage: response.page,
+        hasMorePages: arg < response.total_pages,
+      };
+    },
+    serializeQueryArgs({ endpointName }) {
+      return endpointName;
+    },
+    merge(currentCachData, responseData) {
+      if (responseData.lastPage === 1) {
+        currentCachData.results = responseData.results;
+      } else {
+        currentCachData.results.push(...responseData.results);
+      }
+      currentCachData.lastPage = responseData.lastPage;
+      currentCachData.hasMorePages = responseData.hasMorePages;
+    },
+    forceRefetch({ currentArg, previousArg }) {
+      return currentArg !== previousArg;
+    },  
   }),
+  }), 
 });
 
 export const {
@@ -137,4 +173,6 @@ export const {
   useGetMovieDetailsQuery,
   useSearchMoviesQuery,
   useGetCompanyQuery,
+  useAddFavoriteMutation,
+  useGetFavoriteQuery
 } = tmdbApi;
