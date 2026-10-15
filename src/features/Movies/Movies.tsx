@@ -4,7 +4,14 @@ import { Box, Button, Container, Grid, LinearProgress, TextField, Typography } f
 import { AuthContext, anonymousUser } from "../../AuthContext";
 import { useIntersectionObserver } from "../../hooks/useIntersectionObserver";
 import { MoviesFilter } from "./MoviesFilter";
-import { MoviesFilters, MoviesQuery, useGetConfigurationQuery, useGetMoviesQuery, useSearchMoviesQuery } from "../../services/tmdb";
+import {
+  MoviesFilters,
+  MoviesQuery,
+  useGetConfigurationQuery,
+  useGetFavoriteQuery,
+  useGetMoviesQuery,
+  useSearchMoviesQuery,
+} from "../../services/tmdb";
 
 const initialQuery: MoviesQuery = {
   page: 1,
@@ -13,6 +20,7 @@ const initialQuery: MoviesQuery = {
 
 function Movies() {
   const [moviesQuery, setmoviesQuery] = useState<MoviesQuery>(initialQuery);
+  const [favoritePage, setFavoritePage] = useState(1);
 
   const { data: configuration } = useGetConfigurationQuery();
   const { data, isFetching } = useGetMoviesQuery(moviesQuery);
@@ -21,14 +29,11 @@ function Movies() {
 
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const {
-  data: searchMovie,
-  isFetching: searchFetching,
-} = useSearchMoviesQuery(searchTerm, {
-  skip: !searchTerm.trim(),
-});
+  const { data: searchMovie, isFetching: searchFetching } = useSearchMoviesQuery(searchTerm, {
+    skip: !searchTerm.trim(),
+  });
 
-  const isSearching = searchTerm.trim() !=="";
+  const isSearching = searchTerm.trim() !== "";
 
   const movies = isSearching ? searchMovie?.results : data?.results;
 
@@ -39,6 +44,20 @@ function Movies() {
 
   const auth = useContext(AuthContext);
   const loggedIn = auth.user !== anonymousUser;
+
+  const { data: favoritesData, isFetching: favoritesFetching } = useGetFavoriteQuery(favoritePage, {
+    skip: !loggedIn,
+  });
+
+  const favoriteIds = new Set(favoritesData?.results.map((movie) => movie.id) ?? []);
+
+  const favoriteHasMorePages = favoritesData?.hasMorePages;
+
+  useEffect(() => {
+    if (loggedIn && !favoritesFetching && favoriteHasMorePages) {
+      setFavoritePage((page) => page + 1);
+    }
+  }, [loggedIn, favoritesFetching, favoriteHasMorePages]);
 
   const onIntersect = useCallback(() => {
     if (hasMorePages) {
@@ -55,6 +74,7 @@ function Movies() {
           onApply={(f) => {
             const moviesFilters: MoviesFilters = {
               keywords: f.keywords.map((k) => k.id),
+              companies: f.companies.map((c) => c.id),
               genres: f.genres,
             };
             setmoviesQuery({
@@ -79,7 +99,7 @@ function Movies() {
               variant="contained"
               onClick={() => {
                 const value = query.trim();
-                if (value) {                  
+                if (value) {
                   setSearchTerm(value);
                 }
               }}
@@ -102,6 +122,7 @@ function Movies() {
                 </Typography> */}
           <Grid container spacing={3}>
             {!isFetching && !movies?.length && <Typography variant="h6">No movies were found that match your query.</Typography>}
+
             {movies?.map((m) => (
               <Grid key={m.id} size={{ xs: 12, sm: 6, md: 4 }} sx={{ display: "flex", justifyContent: "center" }}>
                 <MovieCard
@@ -111,6 +132,7 @@ function Movies() {
                   popularity={m.popularity}
                   enableUserActions={loggedIn}
                   image={formatImageUrl(m.backdrop_path)}
+                  isFavorite={favoriteIds.has(m.id)}
                 />
               </Grid>
             ))}

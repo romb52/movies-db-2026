@@ -48,7 +48,12 @@ function AuthSection({ onLogin, onLogout }: AuthSectionProps) {
           Log out
         </Button>
         <Tooltip title="Favorites">
-          <IconButton component={RouterLink} to="/favorites" sx={{ml:1}}>
+          <IconButton 
+          component={RouterLink} 
+          to="/favorites" sx={{ml:1}}
+          color="inherit"
+          aria-label="Favorites"
+          >
             <FavoriteIcon />
           </IconButton>
         </Tooltip>

@@ -45,8 +45,15 @@ interface Genre {
   name: string;
 }
 
+interface FavoriteResponse {
+  success: boolean;
+  status_code: number;
+  status_message: string;
+}
+
 export const tmdbApi = createApi({
   reducerPath: "tmdbApi",
+  tagTypes: ["Favorites"],
   baseQuery: fetchBaseQuery({
     baseUrl: `${configuration.apiUrl}/3`,
     prepareHeaders(headers) {
@@ -101,8 +108,11 @@ export const tmdbApi = createApi({
         if (responseData.lastPage === 1) {
           currentCachData.results = responseData.results;
         } else {
-          currentCachData.results.push(...responseData.results);
+          const existingIds = new Set(currentCachData.results.map((movie) => movie.id));
+
+          currentCachData.results.push(...responseData.results.filter((movie) => !existingIds.has(movie.id)));
         }
+
         currentCachData.lastPage = responseData.lastPage;
         currentCachData.hasMorePages = responseData.hasMorePages;
       },
@@ -125,7 +135,7 @@ export const tmdbApi = createApi({
     getMovieDetails: builder.query<MovieDetails, number>({
       query: (id) => `/movie/${id}`,
     }),
-    addFavorite: builder.mutation<void, { movieId: number; favorite: boolean }>({
+    addFavorite: builder.mutation<FavoriteResponse, { movieId: number; favorite: boolean }>({
       query: ({ movieId, favorite }) => ({
         url: `/account/${configuration.apiAccountId}/favorite`,
         method: "POST",
@@ -135,33 +145,35 @@ export const tmdbApi = createApi({
           favorite,
         },
       }),
+      invalidatesTags: ["Favorites"],
     }),
-     getFavorite: builder.query<MoviesResponse, number>({
-    query: (page = 1) => `/account/${configuration.apiAccountId}/favorite/movies?page=${page}`,
-    transformResponse: (response: PageResponse<MovieDetails>, _, arg) => {
-      return {
-        results: response.results,
-        lastPage: response.page,
-        hasMorePages: arg < response.total_pages,
-      };
-    },
-    serializeQueryArgs({ endpointName }) {
-      return endpointName;
-    },
-    merge(currentCachData, responseData) {
-      if (responseData.lastPage === 1) {
-        currentCachData.results = responseData.results;
-      } else {
-        currentCachData.results.push(...responseData.results);
-      }
-      currentCachData.lastPage = responseData.lastPage;
-      currentCachData.hasMorePages = responseData.hasMorePages;
-    },
-    forceRefetch({ currentArg, previousArg }) {
-      return currentArg !== previousArg;
-    },  
+    getFavorite: builder.query<MoviesResponse, number>({
+      query: (page = 1) => `/account/${configuration.apiAccountId}/favorite/movies?page=${page}`,
+      providesTags: ["Favorites"],
+      transformResponse: (response: PageResponse<MovieDetails>, _, arg) => {
+        return {
+          results: response.results,
+          lastPage: response.page,
+          hasMorePages: arg < response.total_pages,
+        };
+      },
+      serializeQueryArgs({ endpointName }) {
+        return endpointName;
+      },
+      merge(currentCachData, responseData) {
+        if (responseData.lastPage === 1) {
+          currentCachData.results = responseData.results;
+        } else {
+          currentCachData.results.push(...responseData.results);
+        }
+        currentCachData.lastPage = responseData.lastPage;
+        currentCachData.hasMorePages = responseData.hasMorePages;
+      },
+      forceRefetch({ currentArg, previousArg }) {
+        return currentArg !== previousArg;
+      },
+    }),
   }),
-  }), 
 });
 
 export const {
@@ -174,5 +186,5 @@ export const {
   useSearchMoviesQuery,
   useGetCompanyQuery,
   useAddFavoriteMutation,
-  useGetFavoriteQuery
+  useGetFavoriteQuery,
 } = tmdbApi;

@@ -24,10 +24,10 @@ function Favorites() {
   const loggedIn = auth.user !== anonymousUser;
 
   const onIntersect = useCallback(() => {
-    if (hasMorePages) {
+    if (hasMorePages&& !isFetching) {
         setFavoritemoviesQuery((page) => ( page + 1 ));
     }
-  }, [hasMorePages]);
+  }, [hasMorePages, isFetching]);
 
   const [targetRef] = useIntersectionObserver({ onIntersect });
 
@@ -44,6 +44,7 @@ function Favorites() {
               popularity={m.popularity}
               enableUserActions={loggedIn}
               image={formatImageUrl(m.backdrop_path)}
+              isFavorite={true}
             />
           </Grid>
         ))}
