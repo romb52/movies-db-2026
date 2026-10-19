@@ -13,6 +13,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { Provider } from 'react-redux';
 import store from './store';
 import Favorites from './features/Favorites/Favorites';
+import { Extra } from './features/Extra/Extra';
 const About = lazy(() => import('./features/About/About'));
 const Movies = lazy(() => import('./features/Movies/Movies'));
 const MovieDetails = lazy(() => import('./features/Movies/MovieDetails'));
@@ -64,6 +65,10 @@ const router = createBrowserRouter([
       {
         path: "/favorites",
         element: <Favorites />
+      },
+      {
+        path: "/extra",
+        element: <Extra />
       },
     ]
   },
