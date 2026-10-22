@@ -29,7 +29,24 @@ export interface Character {
   image: string;
 }
 
-export const rickandmortyApi= createApi({
+export interface CharacterDetails extends Character {
+  status: string;
+  species: string;
+  gender: string;
+}
+
+const CHARACTERS_FRAGMENT = gql`
+  fragment CharacterFields on Character {
+    id
+    name
+    image
+    status
+    species
+    gender
+  }
+`;
+
+export const rickandmortyApi = createApi({
   reducerPath: "rickandmortyApi",
   baseQuery: graphqlRequestBaseQuery({
     url: "https://rickandmortyapi.com/graphql",
@@ -60,10 +77,28 @@ export const rickandmortyApi= createApi({
         };
       },
       transformResponse(response: EpisodesResponse) {
-        return {results: response.episodes.results};
+        return { results: response.episodes.results };
+      },
+    }),
+     getCharacter: builder.query<CharacterDetails | null, number>({
+      query: (id) => ({
+        document: gql`
+          ${CHARACTERS_FRAGMENT}
+
+          query GetCharacter($id: ID!) {
+            character(id: $id) {
+              ...CharacterFields
+            }
+          }
+        `,
+        variables: { id },
+      }),
+      transformResponse(response: { character: CharacterDetails | null }) {
+        return response.character;
       },
     }),
   }),
 });
 
-export const {useGetEpisodesQuery} = rickandmortyApi;
+
+export const { useGetEpisodesQuery, useGetCharacterQuery } = rickandmortyApi;

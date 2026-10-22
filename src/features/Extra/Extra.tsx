@@ -3,6 +3,7 @@ import { Pager } from "./Pager";
 import { EpisodeCard } from "./EpisodeCard";
 import { EpisodesQuery, useGetEpisodesQuery } from "../../services/rickandmorty";
 import { useState } from "react";
+import { CharacterDetails } from "./CharacterDetails";
 
 const defaultQuery = { page: 1 };
 
@@ -17,6 +18,7 @@ export function Extra() {
         onNext={() => setQuery((q) => ({ ...q, page: q.page + 1 }))}
         onPrev={() => setQuery((q) => ({ ...q, page: q.page - 1 }))}
       />
+      <CharacterDetails id={2} />
       {isFetching && <LinearProgress sx={{ mb: 2 }} />}
       <Grid container spacing={2}>
         {data?.results.map((e) => (
