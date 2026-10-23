@@ -1,7 +1,11 @@
 import { Alert, Avatar, Card, CardContent, CircularProgress, Stack, Typography } from "@mui/material";
 import { useGetCharacterQuery } from "../../services/rickandmorty";
 
-export function CharacterDetails({ id }: { id: number }) {
+export interface CharacterDetailsProps {
+    id : number
+}
+
+export function CharacterDetails({ id }: CharacterDetailsProps) {
     const { data, isLoading, error } = useGetCharacterQuery(id);
     if (isLoading) {
         return <CircularProgress />;
@@ -14,7 +18,7 @@ export function CharacterDetails({ id }: { id: number }) {
     }
 
     return (
-        <Card sx={{ maxWidth: 400 }}>
+        <Card elevation={0} sx={{ width: "100%" }}>
             <CardContent>
                 <Stack >
                     <Avatar

@@ -1,7 +1,12 @@
-import { Avatar, Box, Card, CardContent, Container, Typography } from "@mui/material";
+import { Avatar, Box, ButtonBase, Card, CardContent, Typography } from "@mui/material";
 import { Episode } from "../../services/rickandmorty";
 
-export function EpisodeCard({ name, episode, air_date, characters }: Episode) {
+
+interface EpisodeCardProps extends Episode {
+  onSelectedCharacter(id: number): void;
+}
+
+export function EpisodeCard({ name, episode, air_date, characters, onSelectedCharacter }: EpisodeCardProps) {
   return (
     <Card sx={{ width: "100%", maxWidth: 400, py: 9 }}>
       <CardContent>
@@ -25,18 +30,19 @@ export function EpisodeCard({ name, episode, air_date, characters }: Episode) {
           }}
         >
           {characters.map((character) => (
-            <Box
+            <ButtonBase
               key={character.id}
+              onClick={() => onSelectedCharacter(character.id)}
               sx={{
                 display: "flex",
                 alignItems: "center",
                 gap: 2,
                 mt: 1,
-              }}
+              }}              
             >
               <Avatar src={character.image} alt={character.name} />
               <Typography>{character.name}</Typography>
-            </Box>
+            </ButtonBase>
           ))}
         </Box>
       </CardContent>
