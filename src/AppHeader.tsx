@@ -24,6 +24,7 @@ export function AppHeader({ onLogin, onLogout }: AppHeaderProps) {
             <HeaderLink to="/movies">Movies</HeaderLink>
             <HeaderLink to="/about">About</HeaderLink>
             <HeaderLink to="/extra">Extra</HeaderLink>
+            <HeaderLink to="/star-wars">Star Wars</HeaderLink>
           </nav>
         </Box>
         <AuthSection onLogin={onLogin} onLogout={onLogout} />

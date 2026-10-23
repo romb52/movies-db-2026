@@ -3,11 +3,10 @@ import { Pager } from "./Pager";
 import { EpisodeCard } from "./EpisodeCard";
 import { EpisodesQuery, useGetEpisodesQuery } from "../../services/rickandmorty";
 import { useState } from "react";
-import { CharacterDetails, CharacterDetailsProps } from "./CharacterDetails";
+import { CharacterDetails } from "./CharacterDetails";
 import CloseIcon from "@mui/icons-material/Close";
 
 const defaultQuery = { page: 1 };
-//const defaultCharacterId = { id: 3 };
 
 export function Extra() {
   const [idQuery, setIdQuery] = useState<number | null>(null);

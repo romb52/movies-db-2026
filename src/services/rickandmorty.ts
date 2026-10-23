@@ -80,7 +80,7 @@ export const rickandmortyApi = createApi({
         return { results: response.episodes.results };
       },
     }),
-     getCharacter: builder.query<CharacterDetails | null, number>({
+    getCharacter: builder.query<CharacterDetails | null, number>({
       query: (id) => ({
         document: gql`
           ${CHARACTERS_FRAGMENT}
@@ -99,6 +99,5 @@ export const rickandmortyApi = createApi({
     }),
   }),
 });
-
 
 export const { useGetEpisodesQuery, useGetCharacterQuery } = rickandmortyApi;

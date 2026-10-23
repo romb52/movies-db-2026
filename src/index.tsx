@@ -1,43 +1,46 @@
-import '@fontsource/roboto/300.css';
-import '@fontsource/roboto/400.css';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
 
-
-import React, { Profiler, Suspense, lazy } from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import { ErrorBoundary } from 'react-error-boundary';
-import { Provider } from 'react-redux';
-import store from './store';
-import Favorites from './features/Favorites/Favorites';
-import { Extra } from './features/Extra/Extra';
-const About = lazy(() => import('./features/About/About'));
-const Movies = lazy(() => import('./features/Movies/Movies'));
-const MovieDetails = lazy(() => import('./features/Movies/MovieDetails'));
-const Home = lazy(() => import('./features/Home/Home'));
+import React, { Profiler, Suspense, lazy } from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { ApolloProvider } from "@apollo/client/react";
+import { ErrorBoundary } from "react-error-boundary";
+import { Provider } from "react-redux";
+import store from "./store";
+import Favorites from "./features/Favorites/Favorites";
+import { Extra } from "./features/Extra/Extra";
+import apolloClient from "./services/apollo";
+import StarWars from "./features/StarWars/StarWars";
+const About = lazy(() => import("./features/About/About"));
+const Movies = lazy(() => import("./features/Movies/Movies"));
+const MovieDetails = lazy(() => import("./features/Movies/MovieDetails"));
+const Home = lazy(() => import("./features/Home/Home"));
 
 //import { ErrorBoundary } from './ErrorBoundary';
 
-
 function AppEntrypoint() {
-  return <Provider store={store}>
-    <ErrorBoundary fallback={<h2>Oops! Something weny wrong...</h2>}><App /></ErrorBoundary>
-  </Provider>
+  return (
+    <Provider store={store}>
+      <ApolloProvider client={apolloClient}>
+      <ErrorBoundary fallback={<h2>Oops! Something weny wrong...</h2>}>
+        <App />
+      </ErrorBoundary>
+      </ApolloProvider>
+    </Provider>
+  );
 }
 
-function onRender(
-  id: string,
-  phase: "mount" | "update" | "nested-update",
-  actualDuration: number
-) {
+function onRender(id: string, phase: "mount" | "update" | "nested-update", actualDuration: number) {
   console.log({
     id,
     phase,
     actualDuration,
-  })
+  });
 }
 
 const router = createBrowserRouter([
@@ -48,36 +51,41 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Home />
+        element: <Home />,
       },
       {
         path: "/about",
-        element: (<Profiler id="About" onRender={onRender}><About /></Profiler>)
+        element: (
+          <Profiler id="About" onRender={onRender}>
+            <About />
+          </Profiler>
+        ),
       },
       {
         path: "/movies",
-        element: <Movies />
+        element: <Movies />,
       },
       {
         path: "/movies/:id",
-        element: <MovieDetails />
+        element: <MovieDetails />,
       },
       {
         path: "/favorites",
-        element: <Favorites />
+        element: <Favorites />,
       },
       {
         path: "/extra",
-        element: <Extra />
+        element: <Extra />,
       },
-    ]
+      {
+        path: "/star-wars",
+        element: <StarWars />,
+      },
+    ],
   },
+]);
 
-])
-
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   <React.StrictMode>
     <Suspense fallback={<h2> Loading...</h2>}>
