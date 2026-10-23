@@ -1,6 +1,6 @@
 import { gql, type TypedDocumentNode } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
-import { Alert, Container, Dialog, DialogContent, DialogTitle, Grid, IconButton, LinearProgress, Typography } from "@mui/material";
+import { Alert, Container, LinearProgress, Typography } from "@mui/material";
 
 
 type StarWarsFilmsVariables = Record<string, never>;

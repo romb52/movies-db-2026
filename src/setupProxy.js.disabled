@@ -1,0 +1,14 @@
+const { createProxyMiddleware } = require("http-proxy-middleware");
+
+module.exports = function (app) {
+  app.use(
+    "/swapi",
+    createProxyMiddleware({
+      target: "https://swapi-graphql.netlify.app",
+      changeOrigin: true,
+      pathRewrite: {
+        "^/swapi": "/.netlify/functions/index",
+      },
+    })
+  );
+};

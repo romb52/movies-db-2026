@@ -16,6 +16,7 @@ import Favorites from "./features/Favorites/Favorites";
 import { Extra } from "./features/Extra/Extra";
 import apolloClient from "./services/apollo";
 import StarWars from "./features/StarWars/StarWars";
+import Pokedex from "./features/Pokedex/Pokedex";
 const About = lazy(() => import("./features/About/About"));
 const Movies = lazy(() => import("./features/Movies/Movies"));
 const MovieDetails = lazy(() => import("./features/Movies/MovieDetails"));
@@ -80,6 +81,10 @@ const router = createBrowserRouter([
       {
         path: "/star-wars",
         element: <StarWars />,
+      },
+      {
+        path: "/pokedex",
+        element: <Pokedex />,
       },
     ],
   },

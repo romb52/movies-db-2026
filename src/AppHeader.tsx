@@ -25,6 +25,7 @@ export function AppHeader({ onLogin, onLogout }: AppHeaderProps) {
             <HeaderLink to="/about">About</HeaderLink>
             <HeaderLink to="/extra">Extra</HeaderLink>
             <HeaderLink to="/star-wars">Star Wars</HeaderLink>
+            <HeaderLink to="/pokedex">Pokedex</HeaderLink>
           </nav>
         </Box>
         <AuthSection onLogin={onLogin} onLogout={onLogout} />
