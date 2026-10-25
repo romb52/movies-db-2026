@@ -1,7 +1,6 @@
 import { MovieCard } from "./MovieCard";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Box, Button, Container, Grid, LinearProgress, TextField, Typography } from "@mui/material";
-import { AuthContext, anonymousUser } from "../../AuthContext";
 import { useIntersectionObserver } from "../../hooks/useIntersectionObserver";
 import { MoviesFilter } from "./MoviesFilter";
 import {
@@ -12,6 +11,7 @@ import {
   useGetMoviesQuery,
   useSearchMoviesQuery,
 } from "../../services/tmdb";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const initialQuery: MoviesQuery = {
   page: 1,
@@ -42,8 +42,11 @@ function Movies() {
     return path && configuration ? `${configuration?.images.base_url}w780${path}` : undefined;
   }
 
-  const auth = useContext(AuthContext);
-  const loggedIn = auth.user !== anonymousUser;
+  //const auth = useContext(AuthContext);
+ // const loggedIn = auth.user !== anonymousUser;
+
+  const { user, isAuthenticated } = useAuth0();
+  const loggedIn = isAuthenticated;
 
   const { data: favoritesData, isFetching: favoritesFetching } = useGetFavoriteQuery(favoritePage, {
     skip: !loggedIn,

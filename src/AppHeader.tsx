@@ -4,6 +4,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import { Link as RouterLink } from "react-router-dom";
 import { useContext } from "react";
 import { anonymousUser, AuthContext } from "./AuthContext";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface AppHeaderProps {
   onLogin(): void;
@@ -28,34 +29,47 @@ export function AppHeader({ onLogin, onLogout }: AppHeaderProps) {
             <HeaderLink to="/pokedex">Pokedex</HeaderLink>
           </nav>
         </Box>
-        <AuthSection onLogin={onLogin} onLogout={onLogout} />
+        <AuthSection  />
       </Toolbar>
     </AppBar>
   );
 }
 
-interface AuthSectionProps {
-  onLogin(): void;
-  onLogout(): void;
-}
 
-function AuthSection({ onLogin, onLogout }: AuthSectionProps) {
-  const auth = useContext(AuthContext);
-  const loggedIn = auth.user !== anonymousUser;
 
-  if (loggedIn) {
+function AuthSection() {
+
+  const { user, isAuthenticated, loginWithRedirect, logout } = useAuth0();
+
+  const onLogin = async () => {
+    await loginWithRedirect({
+      appState: {
+        returnTo: "/"
+      }
+    });
+  }
+
+  const onLogout = () => {
+    logout({
+      logoutParams: {
+        returnTo: window.location.origin
+      }
+    });
+  }
+
+  if (isAuthenticated) {
     return (
       <>
-        <Typography>Hello, {auth.user.name} !</Typography>
+        <Typography>Hello, {user?.name} !</Typography>
         <Button variant="contained" sx={{ ml: 2 }} onClick={onLogout}>
           Log out
         </Button>
         <Tooltip title="Favorites">
-          <IconButton 
-          component={RouterLink} 
-          to="/favorites" sx={{ml:1}}
-          color="inherit"
-          aria-label="Favorites"
+          <IconButton
+            component={RouterLink}
+            to="/favorites" sx={{ ml: 1 }}
+            color="inherit"
+            aria-label="Favorites"
           >
             <FavoriteIcon />
           </IconButton>

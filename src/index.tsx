@@ -17,6 +17,8 @@ import { Extra } from "./features/Extra/Extra";
 import apolloClient from "./services/apollo";
 import StarWars from "./features/StarWars/StarWars";
 import Pokedex from "./features/Pokedex/Pokedex";
+import { StatefulAuthProvider } from "./auth/StatefulAuthProvider";
+import { AuthCallback } from "./auth/AuthCallback";
 const About = lazy(() => import("./features/About/About"));
 const Movies = lazy(() => import("./features/Movies/Movies"));
 const MovieDetails = lazy(() => import("./features/Movies/MovieDetails"));
@@ -26,13 +28,15 @@ const Home = lazy(() => import("./features/Home/Home"));
 
 function AppEntrypoint() {
   return (
-    <Provider store={store}>
-      <ApolloProvider client={apolloClient}>
-      <ErrorBoundary fallback={<h2>Oops! Something weny wrong...</h2>}>
-        <App />
-      </ErrorBoundary>
-      </ApolloProvider>
-    </Provider>
+    <StatefulAuthProvider>
+      <Provider store={store}>
+        <ApolloProvider client={apolloClient}>
+          <ErrorBoundary fallback={<h2>Oops! Something weny wrong...</h2>}>
+            <App />
+          </ErrorBoundary>
+        </ApolloProvider>
+      </Provider>
+    </StatefulAuthProvider>
   );
 }
 
@@ -73,6 +77,10 @@ const router = createBrowserRouter([
       {
         path: "/favorites",
         element: <Favorites />,
+      },
+       {
+        path: "/callback",
+        element: <AuthCallback />,
       },
       {
         path: "/extra",

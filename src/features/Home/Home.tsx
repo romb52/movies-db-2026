@@ -1,13 +1,12 @@
 import { Link as RouterLink } from "react-router-dom";
 import { Button, Container, Stack, Typography } from "@mui/material";
-import { anonymousUser, AuthContext } from "../../AuthContext";
-import { useContext } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 
 export default function Home() {
-    const auth = useContext(AuthContext);
-    const loggedIn = auth.user !== anonymousUser;
-    const greeting = loggedIn ? `${auth.user.name}, explore movies today with us!` : "Explore movies today with us!"
+    const {user, isAuthenticated} = useAuth0();
+    
+    const greeting = isAuthenticated ? `${user?.name}, explore movies today with us!` : "Explore movies today with us!"
 
    
    //throw new Error ("Fuckupp!");
