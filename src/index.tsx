@@ -19,6 +19,8 @@ import StarWars from "./features/StarWars/StarWars";
 import Pokedex from "./features/Pokedex/Pokedex";
 import { StatefulAuthProvider } from "./auth/StatefulAuthProvider";
 import { AuthCallback } from "./auth/AuthCallback";
+import { Profile } from "./features/Profile/Profile";
+import { AuthenticationGuard } from "./auth/AuthenticationGuard";
 const About = lazy(() => import("./features/About/About"));
 const Movies = lazy(() => import("./features/Movies/Movies"));
 const MovieDetails = lazy(() => import("./features/Movies/MovieDetails"));
@@ -77,6 +79,10 @@ const router = createBrowserRouter([
       {
         path: "/favorites",
         element: <Favorites />,
+      },
+        {
+        path: "/profile",
+        element: <AuthenticationGuard component={Profile} />,
       },
        {
         path: "/callback",
