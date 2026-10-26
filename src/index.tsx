@@ -21,6 +21,7 @@ import { StatefulAuthProvider } from "./auth/StatefulAuthProvider";
 import { AuthCallback } from "./auth/AuthCallback";
 import { Profile } from "./features/Profile/Profile";
 import { AuthenticationGuard } from "./auth/AuthenticationGuard";
+import { Protected } from "./features/Protected/Protected";
 const About = lazy(() => import("./features/About/About"));
 const Movies = lazy(() => import("./features/Movies/Movies"));
 const MovieDetails = lazy(() => import("./features/Movies/MovieDetails"));
@@ -87,6 +88,11 @@ const router = createBrowserRouter([
        {
         path: "/callback",
         element: <AuthCallback />,
+      },
+       {
+        path: "/protected",
+        //element: <AuthenticationGuard component={Protected} />,
+        element: <Protected />,
       },
       {
         path: "/extra",
